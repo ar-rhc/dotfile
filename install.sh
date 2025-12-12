@@ -222,7 +222,31 @@ else
 fi
 echo ""
 
-# Step 11: Final instructions
+# Step 11: Start services
+echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}Step 11: Starting services${NC}"
+echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# Start SketchyBar
+if command_exists sketchybar; then
+    echo -e "${YELLOW}🚀 Starting SketchyBar...${NC}"
+    brew services start sketchybar 2>/dev/null || sketchybar --reload
+    sleep 2
+    echo -e "${GREEN}✅ SketchyBar started${NC}"
+else
+    echo -e "${YELLOW}⚠️  SketchyBar not found, skipping${NC}"
+fi
+
+# Start JankyBorders
+if brew list borders &>/dev/null; then
+    echo -e "${YELLOW}🚀 Starting JankyBorders...${NC}"
+    brew services start borders 2>/dev/null || echo -e "${YELLOW}⚠️  Could not start borders service${NC}"
+    echo -e "${GREEN}✅ JankyBorders started${NC}"
+fi
+
+echo ""
+
+# Step 12: Final instructions
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}✅ Installation complete!${NC}"
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -233,17 +257,12 @@ echo -e "1. ${YELLOW}Grant Accessibility Permissions:${NC}"
 echo -e "   • Open System Settings → Privacy & Security → Accessibility"
 echo -e "   • Enable: AeroSpace, SketchyBar, Hammerspoon"
 echo ""
-echo -e "2. ${YELLOW}Start services:${NC}"
-echo -e "   • AeroSpace should start automatically"
-echo -e "   • SketchyBar: brew services start sketchybar"
-echo -e "   • Hammerspoon: Open the app from Applications"
-echo -e "   • JankyBorders: brew services start borders"
+echo -e "2. ${YELLOW}Start Hammerspoon:${NC}"
+echo -e "   • Open the app from Applications"
 echo ""
-echo -e "3. ${YELLOW}Reload SketchyBar:${NC}"
-echo -e "   • Run: sketchybar --reload"
-echo ""
-echo -e "4. ${YELLOW}Optional dependencies:${NC}"
+echo -e "3. ${YELLOW}Optional dependencies:${NC}"
 echo -e "   • Install 'macism' for input source switching:"
 echo -e "     brew install macism"
 echo ""
 echo -e "${GREEN}🎉 Your dotfiles are now set up!${NC}"
+echo -e "${GREEN}SketchyBar and JankyBorders have been started automatically.${NC}"
