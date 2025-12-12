@@ -1,0 +1,448 @@
+# Place a copy of this config to ~/.aerospace.toml
+# After that, you can edit ~/.aerospace.toml to your liking
+
+# SketchyBar path: /opt/homebrew/bin/sketchybar
+# Used in exec-and-forget commands for service mode triggers
+
+# You can use it to add commands that run after login to macOS user session.
+# 'start-at-login' needs to be 'true' for 'after-login-command' to work
+# Available commands: https://nikitabobko.github.io/AeroSpace/commands
+after-login-command = []
+
+# You can use it to add commands that run after AeroSpace startup.
+# 'after-startup-command' is run after 'after-login-command'
+# Available commands : https://nikitabobko.github.io/AeroSpace/commands
+after-startup-command = [
+    # JankyBorders has a built-in detection of already running process,
+    # so it won't be run twice on AeroSpace restart
+    'exec-and-forget /opt/homebrew/bin/sketchybar',
+    'exec-and-forget /opt/homebrew/opt/borders/bin/borders active_color="glow(0xd943ff64)" inactive_color=0x20494d64 width=8.0'
+]
+
+exec-on-workspace-change = [
+    '/bin/bash',
+    '-c',
+    '/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change AEROSPACE_FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE AEROSPACE_PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE',
+]
+
+# Start AeroSpace at login
+start-at-login = true
+
+# Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
+enable-normalization-flatten-containers = false
+enable-normalization-opposite-orientation-for-nested-containers = false
+
+# See: https://nikitabobko.github.io/AeroSpace/guide#layouts
+# The 'accordion-padding' specifies the size of accordion padding
+# You can set 0 to disable the padding feature
+accordion-padding = 20
+
+# Possible values: tiles|accordion
+default-root-container-layout = 'tiles'
+
+# Possible values: horizontal|vertical|auto
+# 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
+#               tall monitor (anything higher than wide) gets vertical orientation
+default-root-container-orientation = 'auto'
+
+# Possible values: (qwerty|dvorak)
+# See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
+key-mapping.preset = 'qwerty'
+
+## on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+## on-focus-changed = ['move-mouse window-lazy-center']
+
+# Gaps between windows (inner-*) and between monitor edges (outer-*).
+# Possible values:
+# - Constant:     gaps.outer.top = 8
+# - Per monitor:  gaps.outer.top = [{ monitor.main = 16 }, { monitor."some-pattern" = 32 }, 24]
+#                 In this example, 24 is a default value when there is no match.
+#                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
+#                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
+[workspace-to-monitor-force-assignment]
+# Monitor 1: HP E24u G4
+1 = 1
+Q = 1
+A = 1
+Z = 1
+# Monitor 2: LG ULTRAFINE
+2 = 2
+W = 2
+S = 2
+X = 2
+
+# Monitor 3: S24C31x
+3 = 3
+E = 3
+D = 3
+C = 3
+M = 3
+
+
+[gaps]
+inner.horizontal = 5
+inner.vertical = 5
+# Top gap for battery indicator - all monitors get 40px
+outer.top = [{ monitor."main" = 45 }, 45]
+outer.left = 5
+outer.bottom = 5
+outer.right = 5
+
+# See https://nikitabobko.github.io/AeroSpace/guide#exec-env-vars
+[exec] # Again, you don't need to copy all config sections to your config.
+inherit-env-vars = true # If you don't touch "exec" section,
+
+[exec.env-vars] # it will fallback to "default-config.toml"
+PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
+
+# 'main' binding mode declaration
+# See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+# 'main' binding mode must be always presented
+[mode.main.binding]
+
+# All possible keys:
+# - Letters.        a, b, c, ..., z
+# - Numbers.        0, 1, 2, ..., 9
+# - Keypad numbers. keypad0, keypad1, keypad2, ..., keypad9
+# - F-keys.         f1, f2, ..., f20
+# - Special keys.   minus, equal, period, comma, slash, backslash, quote, semicolon, backtick,
+#                   leftSquareBracket, rightSquareBracket, space, enter, esc, backspace, tab
+# - Keypad special. keypadClear, keypadDecimalMark, keypadDivide, keypadEnter, keypadEqual,
+#                   keypadMinus, keypadMultiply, keypadPlus
+# - Arrows.         left, down, up, right
+# All possible modifiers: cmd, alt, ctrl, shift
+# All possible commands: https://nikitabobko.github.io/AeroSpace/commands
+
+# You can uncomment this line to open up terminal with alt + enter shortcut-
+# See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
+# alt-enter = 'exec-and-forget open -n /System/Applications/Utilities/Terminal.app'
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#layout
+
+########## Layout Commands ##########
+alt-slash = 'layout tiles horizontal vertical'
+alt-comma = 'layout accordion horizontal vertical'
+alt-ctrl-slash = 'layout tiles horizontal vertical'
+alt-ctrl-shift-f = ['layout floating tiling']
+alt-ctrl-shift-v = 'fullscreen'
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#focus
+alt-keypad4 = 'focus left --boundaries all-monitors-outer-frame'
+alt-keypad2 = 'focus down --boundaries all-monitors-outer-frame'
+alt-keypad8 = 'focus up --boundaries all-monitors-outer-frame'
+alt-keypad6 = 'focus right --boundaries all-monitors-outer-frame'
+
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#move
+# Move window position
+alt-shift-h = 'move left'
+alt-shift-j = 'move down'
+alt-shift-k = 'move up'
+alt-shift-l = 'move right'
+
+alt-shift-keypad4 = 'move left'
+alt-shift-keypad2 = 'move down'
+alt-shift-keypad6 = 'move right'
+alt-shift-keypad8 = 'move up'
+
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#resize
+alt-ctrl-shift-keypadMinus = 'resize smart -50'
+alt-ctrl-shift-keypadPlus = 'resize smart +50'
+alt-ctrl-shift-leftSquareBracket = 'resize smart -50'
+alt-ctrl-shift-rightSquareBracket = 'resize smart +50'
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#workspace
+##### Keypad bindings commented out
+##### alt-shift-keypad1 = 'workspace 1'
+##### alt-shift-keypad2 = 'workspace 2'
+##### alt-shift-keypad3 = 'workspace 3'
+##### alt-shift-keypad4 = 'workspace 4'
+##### alt-shift-keypad5 = 'workspace 5'
+##### alt-shift-keypad6 = 'workspace 6'
+
+# Move window to workspace and focus: alt-shift-<space name> (opt key on Mac)
+alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+alt-shift-q = ['move-node-to-workspace Q', 'workspace Q']
+alt-shift-a = ['move-node-to-workspace A', 'workspace A']
+alt-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+alt-shift-w = ['move-node-to-workspace W', 'workspace W']
+alt-shift-s = ['move-node-to-workspace S', 'workspace S']
+alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+alt-shift-e = ['move-node-to-workspace E', 'workspace E']
+alt-shift-d = ['move-node-to-workspace D', 'workspace D']
+alt-shift-c = ['move-node-to-workspace C', 'workspace C']
+alt-shift-m = ['move-node-to-workspace M', 'workspace M']
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
+##### Keypad bindings commented out
+##### alt-ctrl-shift-keypad1 = ['move-node-to-workspace 1', 'workspace 1']
+##### alt-ctrl-shift-keypad2 = ['move-node-to-workspace 2', 'workspace 2']
+##### alt-ctrl-shift-keypad3 = ['move-node-to-workspace 3', 'workspace 3']
+##### alt-ctrl-shift-keypad4 = ['move-node-to-workspace 4', 'workspace 4']
+##### alt-ctrl-shift-keypad5 = ['move-node-to-workspace 5', 'workspace 5']
+##### alt-ctrl-shift-keypad6 = ['move-node-to-workspace 6', 'workspace 6']
+
+# Focus/switch to workspace: alt-ctrl-shift-<space name>
+alt-ctrl-shift-1 = 'workspace 1'
+alt-ctrl-shift-q = 'workspace Q'
+alt-ctrl-shift-a = 'workspace A'
+alt-ctrl-shift-z = 'workspace Z'
+alt-ctrl-shift-2 = 'workspace 2'
+alt-ctrl-shift-w = 'workspace W'
+alt-ctrl-shift-s = 'workspace S'
+alt-ctrl-shift-x = 'workspace X'
+alt-ctrl-shift-3 = 'workspace 3'
+alt-ctrl-shift-e = 'workspace E'
+alt-ctrl-shift-d = 'workspace D'
+alt-ctrl-shift-c = 'workspace C'
+alt-ctrl-shift-m = 'workspace M'
+
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
+alt-ctrl-shift-tab = 'workspace-back-and-forth'
+# See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
+# cmd-alt-ctrl-shift-tab = 'move-workspace-to-monitor --wrap-around right'
+
+
+#########          Mode Triggering Commands           ########
+#                                                            #
+#                                                            #
+#                                                            #
+#                                                            #
+# See: https://nikitabobko.github.io/AeroSpace/commands#mode #
+#                                                            #
+##############################################################
+alt-ctrl-shift-esc = [
+    'mode service',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_enter'
+]
+alt-ctrl-shift-backtick = [
+    'mode app',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_enter'
+]
+
+
+####### App   Mode   ###########
+#                              #
+#                              #
+#                              #
+################################
+# App triggering mode: alt-ctrl-shift-backtick (caps-.)
+
+[mode.app.binding]
+esc = [
+    'mode main',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit'
+]
+m = [
+    'exec-and-forget open -n /System/Applications/Mail.app',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
+z = [
+    'exec-and-forget open -n /Applications/Zotero.app',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
+w = [
+    'exec-and-forget open -n /Applications/WeChat.app',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
+b = [
+    'exec-and-forget open /Applications/BetterTouchTool.app',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
+e = [
+    'exec-and-forget open "/Applications/Microsoft Edge.app"',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
+
+alt-ctrl-shift-backtick = [
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
+
+
+####### Service   Mode   #######
+#                              #
+#                              #
+#                              #
+################################
+
+
+# 'service' binding mode declaration.
+# See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+
+# disabled hide window
+# cmd-h = []
+# rotate hangul and english
+
+[mode.service.binding]
+esc = [
+    'reload-config',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+r = [
+    'flatten-workspace-tree',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+] # reset layout
+#s = ['layout sticky tiling', 'mode main'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
+f = [
+    'layout floating tiling',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main',
+] # Toggle between floating and tiling layout
+
+alt-ctrl-shift-f = [
+    'fullscreen',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main',
+] # Toggle between floating and tiling layout
+# backspace = [
+#     'close-all-windows-but-current',
+#     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+#     'mode main'
+# ]
+
+c = [
+    'exec-and-forget /bin/bash -c "$HOME/.config/sketchybar/plugins/scripts/close_empty_windows.sh"',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+
+
+left = [
+    'join-with left',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+down = [
+    'join-with down',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+up = [
+    'join-with up',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+right = [
+    'join-with right',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+h = [
+    'join-with left',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+j = [
+    'join-with down',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+k = [
+    'join-with up',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+l = [
+    'join-with right',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'mode main'
+]
+
+alt-ctrl-shift-esc = [
+    'mode main',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit'
+]
+
+
+
+
+
+
+
+
+
+####### Window Detection #######
+#                              #
+#          ---------           #
+#                              #
+################################
+# Automatically close ghost windows (windows with empty titles)
+# [[on-window-detected]]
+# if.window-title-regex-substring = '^$'
+# run = ['close']
+
+
+
+[[on-window-detected]]
+if.app-id = 'com.kakao.KakaoTalkMac'
+run = ['move-node-to-workspace 8']
+
+[[on-window-detected]]
+if.app-id = 'com.tdesktop.Telegram'
+run = ['move-node-to-workspace A']
+
+[[on-window-detected]]
+if.app-id = 'com.hnc.Discord'
+run = ['move-node-to-workspace A']
+
+
+# [[on-window-detected]]
+# if.app-id = "md.obsidian"
+# run = ['move-node-to-workspace 9']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.weather'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.hegenberg.BetterTouchTool'
+run = ['layout floating']
+
+# [[on-window-detected]]
+# if.app-id = 'com.dygmalab.bazecor'
+# run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Music'
+run = ['move-node-to-workspace M']
+
+[[on-window-detected]]
+if.app-id = 'com.tencent.xinWeChat'
+if.window-title-regex-substring = 'Weixin'
+run = ['move-node-to-workspace Q']
+
+[[on-window-detected]]
+if.app-id = 'com.tencent.xinWeChat'
+if.window-title-regex-substring = 'Photos and Videos'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.tencent.xinWeChat'
+if.window-title-regex-substring = 'WeChat (Window)'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.findmy'
+if.window-title-regex-substring = 'Find My'
+run = ['move-node-to-workspace A']
+
+
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
+run = ['move-node-to-workspace Q']
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.edgemac'
+if.window-title-regex-substring = 'Bitwarden - Personal'
+run = ['layout floating']
+

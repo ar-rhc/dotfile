@@ -1,0 +1,207 @@
+# =============================================================================
+# SKHD Configuration - Yabai Window Manager Keybindings
+#  =============================================================================
+
+# =============================================================================
+# Modifier Keys Reference
+# =============================================================================
+# 
+# alt          - Option key (⌥)
+# ctrl         - Control key (⌃)
+# shift        - Shift key (⇧)
+# cmd          - Command key (⌘)
+# hyper        - Custom modifier (typically cmd + ctrl + shift + alt)
+#                Note: 'hyper' must be defined in your skhd configuration
+#                or system preferences as a custom modifier combination
+#
+# Modifiers can be combined with '+' (e.g., shift + alt - h)
+# The '-' separates modifiers from the key (e.g., alt - j means Alt+J)
+#
+# ----------------------------------------------------------------
+# Process Groups (New in skhd.zig!)
+# ----------------------------------------------------------------
+# Define app groups for cleaner process-specific bindings
+.define terminal_apps ["Terminal", "iTerm2", "kitty", "WezTerm"]
+.define browser_apps ["Safari", "Google Chrome", "Firefox", "Arc"]
+.define native_apps ["Safari", "Notes", "Calendar"]
+
+# ----------------------------------------------------------------
+# Command Definitions (New in skhd.zig!)
+# ----------------------------------------------------------------
+# Reduce repetition with reusable command templates
+
+# Focus window or display in direction
+.define focus_dir : yabai -m window --focus {{1}} || yabai -m display --focus {{1}}
+# Swap window or move to display in direction
+.define swap_dir : yabai -m window --swap {{1}} || (yabai -m window --display {{1}} && yabai -m display --focus {{1}})
+# Move window to space and follow
+.define move_space : yabai -m window --space {{1}} && yabai -m space --focus {{1}}
+# Move window to display and follow
+.define move_display : yabai -m window --display {{1}} && yabai -m display --focus {{1}}
+# Resize window
+.define resize_window : yabai -m window --resize {{1}}:{{2}}:{{3}}
+#
+# =============================================================================
+# Application Launching
+# =============================================================================
+
+hyper - return : open -a Terminal
+hyper - m : open -a "Music"
+hyper - o : open -a "Obsidian"
+
+
+# =============================================================================
+# Window Focus (within space)
+# =============================================================================
+
+# change window focus within space (vim keys)
+#shift + alt - j : yabai -m window --focus south
+#shift + alt - k : yabai -m window --focus north
+#shift + alt - h : yabai -m window --focus west
+#shift + alt - l : yabai -m window --focus east
+
+# Focus using numpad (8=north, 4=west, 6=east, 2=south)
+shift - 0x5B : @focus_dir("north")  # numpad 8
+shift - 0x56 : @focus_dir("west")   # numpad 4
+shift - 0x58 : @focus_dir("east")   # numpad 6
+shift - 0x54 : @focus_dir("south")  # numpad 2
+
+# Focus recent window
+hyper - 0x32 : yabai -m window --focus recent
+
+# =============================================================================
+# Display Focus
+# =============================================================================
+
+# change focus to display left and right
+## shift + alt - h : yabai -m display --focus west
+## shift + alt - l : yabai -m display --focus east
+
+# move window to display and focus
+# Not needed as I will just use 1,2,3
+## hyper - a : yabai -m window --display west; yabai -m display --focus west;
+## hyper - d : yabai -m window --display east; yabai -m display --focus east;
+
+
+# move window to display by number and focus
+hyper - 1 : yabai -m window --display 1; yabai -m display --focus 1
+hyper - 2 : yabai -m window --display 2; yabai -m display --focus 2
+hyper - 3 : yabai -m window --display 3; yabai -m display --focus 3
+
+
+ctrl + alt - 1 : yabai -m display --focus 1
+ctrl + alt - 2 : yabai -m display --focus 2
+ctrl + alt - 3 : yabai -m display --focus 3
+
+# =============================================================================
+# Layout Modification
+# =============================================================================
+
+hyper - b : yabai -m space --balance
+hyper - r : yabai -m space --rotate 270
+hyper - 0x59 : yabai -m space --mirror y-axis
+hyper - 0x5c : yabai -m space --mirror x-axis
+
+# toggle stack layout
+# not sure about stacking for now. 
+# Unless there is a good way to unstack them
+## hyper - z : yabai -m space --toggle stack
+
+
+# =============================================================================
+# Window Movement & Swapping
+# =============================================================================
+
+# swap windows within space
+## hyper - 0x21 : yabai -m window --swap east
+## hyper - 0x1E : yabai -m window --swap west
+
+# move window and split (warp)
+ctrl - left : yabai -m window --stack west
+hyper - 0x54 : yabai -m window --warp south
+hyper - 0x5B : yabai -m window --warp north
+hyper - 0x58 : yabai -m window --warp east
+
+
+# =============================================================================
+# Window Management
+# =============================================================================
+
+# toggle window fullscreen/zoom
+hyper - f : yabai -m window --toggle zoom-fullscreen
+hyper - 0x57 : yabai -m window --toggle zoom-fullscreen
+
+
+# toggle window float 
+## hyper - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
+hyper - d : yabai -m window --toggle float --grid 8:8:1:1:6:6
+
+
+
+# =============================================================================
+# Stack Management
+# =============================================================================
+
+### Not working
+
+# Toggle window stack mode
+hyper - s : yabai -m window --toggle stack
+hyper - i : yabai -m window --insert stack
+# Focus next/previous in stack
+hyper - 0x79 : yabai -m window --focus stack.next || yabai -m window --focus stack.first
+hyper - 0x74 : yabai -m window --focus stack.prev || yabai -m window --focus stack.last
+
+# Stack windows in direction (create stack)
+hyper - 0x7b : yabai -m window --stack west
+hyper - 0x7d : yabai -m window --stack south
+hyper - 0x7e : yabai -m window --stack north
+hyper - 0x7c : yabai -m window --stack east
+
+
+# =============================================================================
+# Space Management
+# =============================================================================
+
+
+
+# move window to previous and next space  
+hyper - p : yabai -m window --space prev;
+hyper - n : yabai -m window --space next;
+
+# move window to space by number
+#hyper - 1 : yabai -m window --space 1;
+#hyper - 2 : yabai -m window --space 2; 
+#hyper - 3 : yabai -m window --space 3;
+#hyper - 4 : yabai -m window --space 4;
+#hyper - 5 : yabai -m window --space 5;
+#hyper - 6 : yabai -m window --space 6;
+#hyper - 7 : yabai -m window --space 7;
+
+# =============================================================================
+# Service Controls
+# =============================================================================
+
+# stop/start/restart yabai
+ctrl + alt - q : brew services stop yabai
+ctrl + alt - s : brew services start yabai
+ctrl + alt - r : brew services restart yabai
+hyper - 0x73 : skhd --service-reload
+
+
+# restart yabai (alternative)
+# ctrl + alt + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
+
+# skhdrc #
+
+# change master width
+lalt + shift - left : ~/.config/skhd/resizeWindow.sh -h
+lalt + shift - right : ~/.config/skhd/resizeWindow.sh -l
+
+# change split height  
+lalt + shift - up : ~/.config/skhd/resizeWindow.sh -u
+lalt + shift - down : ~/.config/skhd/resizeWindow.sh -d
+hyper - 0x4e : open -a "Cursor" /Volumes/Nvme/ARfiles/Settings/dotfile
+
+
+## Testing
+hyper - z : yabai -m window --space 6

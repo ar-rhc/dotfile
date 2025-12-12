@@ -1,0 +1,86 @@
+#!/bin/bash
+
+source "$CONFIG_DIR/colors.sh" # Loads all defined colors
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+ITEM_DIR="$CONFIG_DIR/items"
+
+##### Bar Appearance ##### 
+# Configuring the general appearance of the bar.
+# These are only some of the options available. For all options see:
+# https://felixkratz.github.io/SketchyBar/config/bar
+# If you are looking for other colors, see the color picker: 
+# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+
+bar_config=(
+  --bar
+  height=28
+  blur_radius=30
+  position=top
+  sticky=off
+  padding_left=10
+  padding_right=10
+  color="$BAR_COLOR"
+  topmost=window
+)
+
+##### Changing Defaults #####
+# We now change some default values, which are applied to all further items.
+# For a full list of all available item properties see:
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+  --default
+  padding_left=5
+  padding_right=5
+  icon.font="SF Pro Nerd Font:Semibold:14.0"
+  label.font="SF Pro Nerd Font:Semibold:14.0"
+  icon.color="0xff$TEXT"
+  label.color="0xff$TEXT"
+  background.color=$ITEM_BG_COLOR
+  background.corner_radius=5
+  background.height=22
+  icon.padding_left=10
+  icon.padding_right=4
+  label.padding_left=4
+  label.padding_right=10
+)
+
+sketchybar "${bar_config[@]}" "${default[@]}"
+
+
+
+# -- Parallel Initialization --
+# Create left and right sides in parallel for faster startup
+
+# Left side (workspaces + front_app) in background 
+$CONFIG_DIR/batch_init.sh left &
+left_pid=$!
+
+# Right side (cpu, memory, battery, etc.) in background  
+$CONFIG_DIR/batch_init.sh right &
+right_pid=$!
+
+# Center items (can run immediately)
+source $ITEM_DIR/media.sh
+render_bar_item_media
+
+# Wait for both sides to complete
+wait $left_pid $right_pid
+
+# Set focused workspace styling after all items are created
+source $CONFIG_DIR/utils/aerospace.sh
+FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)
+if [[ -n "$FOCUSED_WORKSPACE" ]]; then
+    set_workspace_focused "$FOCUSED_WORKSPACE"
+fi
+
+# -- Handle theme changes --
+sketchybar --add event theme_change AppleInterfaceThemeChangedNotification 
+# This is an invisible item that runs the theme change script
+source $ITEM_DIR/theme_change.sh
+
+# ##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update
+

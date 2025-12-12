@@ -37,4 +37,4 @@ setups/*.zip
 *.p12
 .env
 .env.local
-
+old symbs
