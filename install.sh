@@ -240,8 +240,11 @@ echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━�
 if command_exists sketchybar; then
     echo -e "${YELLOW}🚀 Starting SketchyBar...${NC}"
     brew services start sketchybar 2>/dev/null || sketchybar --reload
+    sleep 3
+    # Restart to ensure fonts are loaded properly
+    sketchybar --restart 2>/dev/null || true
     sleep 2
-    echo -e "${GREEN}✅ SketchyBar started${NC}"
+    echo -e "${GREEN}✅ SketchyBar started and restarted (fonts loaded)${NC}"
 else
     echo -e "${YELLOW}⚠️  SketchyBar not found, skipping${NC}"
 fi
