@@ -29,3 +29,12 @@ sketchybar symlink/.Old/
 # Setup archives
 setups/*.zip
 
+# Sensitive information patterns (extra safety)
+*secret*
+*private*
+*.key
+*.pem
+*.p12
+.env
+.env.local
+
