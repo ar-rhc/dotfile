@@ -126,7 +126,10 @@ if command_exists sketchybar; then
     echo -e "${GREEN}✅ SketchyBar already installed${NC}"
 else
     echo -e "${YELLOW}📦 Installing SketchyBar...${NC}"
-    brew install --cask sketchybar
+    # Add SketchyBar tap first
+    brew tap FelixKratz/formulae
+    brew install sketchybar
+    echo -e "${GREEN}✅ SketchyBar installed${NC}"
     echo -e "${YELLOW}⚠️  Note: You may need to grant Accessibility permissions to SketchyBar${NC}"
     echo -e "${YELLOW}   Go to: System Settings → Privacy & Security → Accessibility${NC}"
 fi
