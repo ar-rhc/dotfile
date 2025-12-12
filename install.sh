@@ -99,7 +99,20 @@ if command_exists aerospace; then
     echo -e "${GREEN}✅ AeroSpace already installed${NC}"
 else
     echo -e "${YELLOW}📦 Installing AeroSpace...${NC}"
-    brew install --cask aerospace
+    # Try tap method first
+    if brew tap nikitabobko/tap 2>/dev/null && brew install --cask nikitabobko/tap/aerospace 2>/dev/null; then
+        echo -e "${GREEN}✅ AeroSpace installed via Homebrew${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Homebrew installation failed, downloading manually...${NC}"
+        AEROSPACE_URL="https://github.com/nikitabobko/AeroSpace/releases/latest/download/AeroSpace.zip"
+        TEMP_DIR=$(mktemp -d)
+        curl -L "$AEROSPACE_URL" -o "$TEMP_DIR/AeroSpace.zip"
+        unzip -q "$TEMP_DIR/AeroSpace.zip" -d "$TEMP_DIR"
+        sudo mv "$TEMP_DIR/AeroSpace.app" /Applications/ 2>/dev/null || mv "$TEMP_DIR/AeroSpace.app" /Applications/
+        xattr -cr /Applications/AeroSpace.app
+        rm -rf "$TEMP_DIR"
+        echo -e "${GREEN}✅ AeroSpace installed manually${NC}"
+    fi
     echo -e "${YELLOW}⚠️  Note: You may need to grant Accessibility permissions to AeroSpace${NC}"
     echo -e "${YELLOW}   Go to: System Settings → Privacy & Security → Accessibility${NC}"
 fi
