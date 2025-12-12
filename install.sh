@@ -153,28 +153,14 @@ echo ""
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${YELLOW}Step 7: Installing JankyBorders${NC}"
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-if command_exists borders || [ -f /opt/homebrew/bin/borders ] || [ -f /opt/homebrew/opt/borders/bin/borders ]; then
+if command_exists borders || brew list borders &>/dev/null; then
     echo -e "${GREEN}✅ JankyBorders already installed${NC}"
 else
     echo -e "${YELLOW}📦 Installing JankyBorders...${NC}"
-    # Try Homebrew first (in case it becomes available)
-    if brew install --cask jankyborders 2>/dev/null; then
-        echo -e "${GREEN}✅ JankyBorders installed via Homebrew${NC}"
-    else
-        echo -e "${YELLOW}⚠️  Homebrew installation failed, downloading manually...${NC}"
-        BORDERS_URL="https://github.com/unixpickle/jankyborders/releases/latest/download/borders.zip"
-        TEMP_DIR=$(mktemp -d)
-        curl -L "$BORDERS_URL" -o "$TEMP_DIR/borders.zip"
-        unzip -q "$TEMP_DIR/borders.zip" -d "$TEMP_DIR"
-        # Install to Homebrew opt directory
-        mkdir -p /opt/homebrew/opt/borders/bin
-        mv "$TEMP_DIR/borders" /opt/homebrew/opt/borders/bin/borders
-        chmod +x /opt/homebrew/opt/borders/bin/borders
-        # Create symlink to make it available in PATH
-        ln -sf /opt/homebrew/opt/borders/bin/borders /opt/homebrew/bin/borders 2>/dev/null || true
-        rm -rf "$TEMP_DIR"
-        echo -e "${GREEN}✅ JankyBorders installed manually${NC}"
-    fi
+    # Add FelixKratz tap (if not already added for SketchyBar)
+    brew tap FelixKratz/formulae 2>/dev/null || true
+    brew install borders
+    echo -e "${GREEN}✅ JankyBorders installed${NC}"
 fi
 echo ""
 
