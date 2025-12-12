@@ -238,13 +238,24 @@ echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━�
 
 # Start SketchyBar
 if command_exists sketchybar; then
-    echo -e "${YELLOW}🚀 Starting SketchyBar...${NC}"
-    brew services start sketchybar 2>/dev/null || sketchybar --reload
-    sleep 3
-    # Restart to ensure fonts are loaded properly
-    sketchybar --restart 2>/dev/null || true
-    sleep 2
-    echo -e "${GREEN}✅ SketchyBar started and restarted (fonts loaded)${NC}"
+    # Check if SketchyBar is already running
+    if pgrep -x "sketchybar" > /dev/null; then
+        echo -e "${YELLOW}🔄 SketchyBar is already running, reloading...${NC}"
+        sketchybar --reload
+        sleep 2
+        # Restart to ensure fonts are loaded properly
+        sketchybar --restart 2>/dev/null || true
+        sleep 2
+        echo -e "${GREEN}✅ SketchyBar reloaded (fonts loaded)${NC}"
+    else
+        echo -e "${YELLOW}🚀 Starting SketchyBar...${NC}"
+        brew services start sketchybar 2>/dev/null || sketchybar --reload
+        sleep 3
+        # Restart to ensure fonts are loaded properly
+        sketchybar --restart 2>/dev/null || true
+        sleep 2
+        echo -e "${GREEN}✅ SketchyBar started and restarted (fonts loaded)${NC}"
+    fi
 else
     echo -e "${YELLOW}⚠️  SketchyBar not found, skipping${NC}"
 fi
