@@ -244,10 +244,16 @@ else
 fi
 
 # Start JankyBorders
-if brew list borders &>/dev/null; then
+if command_exists borders || brew list borders &>/dev/null; then
     echo -e "${YELLOW}🚀 Starting JankyBorders...${NC}"
-    brew services start borders 2>/dev/null || echo -e "${YELLOW}⚠️  Could not start borders service${NC}"
-    echo -e "${GREEN}✅ JankyBorders started${NC}"
+    brew services start borders 2>/dev/null
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ JankyBorders started${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Could not start borders service (may need to be started manually)${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  JankyBorders not found, skipping${NC}"
 fi
 
 echo ""
