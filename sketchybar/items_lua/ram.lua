@@ -63,6 +63,24 @@ for i = 1, NUM_PROCS do
   proc_names[i] = { name = "", is_system = false }
 end
 
+-- Hint at bottom of popup
+sbar.add("item", "ram.hint", {
+  position = "popup.ram",
+  icon = { drawing = false },
+  label = {
+    string = "⌘+click to quit app",
+    font = { family = settings.font.text, style = "Regular", size = 10.0 },
+    color = colors.grey,
+    align = "center",
+    width = popup_width,
+  },
+  background = {
+    height = 2,
+    color = colors.grey,
+    y_offset = 12,
+  },
+})
+
 -- Cmd+click to kill process (only non-system)
 for i = 1, NUM_PROCS do
   local idx = i
