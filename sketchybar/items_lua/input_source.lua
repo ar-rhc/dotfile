@@ -8,6 +8,7 @@ local input = sbar.add("item", "input_source", {
     color = colors.white,
   },
   update_freq = 1,
+  updates = "on",
   click_script = [[
     CURRENT=$(macism)
     ENGLISH="com.apple.keylayout.ABC"
@@ -17,5 +18,5 @@ local input = sbar.add("item", "input_source", {
 })
 
 input:subscribe({ "routine", "forced" }, function(env)
-  sbar.exec("$CONFIG_DIR/plugins/get_input_source.sh")
+  sbar.exec("/bin/bash -c 'export CONFIG_DIR=/Users/alex/.config/sketchybar; /Users/alex/.config/sketchybar/plugins/get_input_source.sh'")
 end)

@@ -1,7 +1,7 @@
 local settings = require("settings")
 
 -- Start the music monitor if not running
-sbar.exec("pgrep -f '$CONFIG_DIR/plugins/music/music_monitor_file' || $CONFIG_DIR/plugins/music/music_monitor_file &")
+sbar.exec("pgrep -f '/Users/alex/.config/sketchybar/plugins/music/music_monitor_file' || /Users/alex/.config/sketchybar/plugins/music/music_monitor_file &")
 
 local music = sbar.add("item", "music", {
   position = "center",
@@ -10,13 +10,10 @@ local music = sbar.add("item", "music", {
   drawing = false,
   updates = "on",
   update_freq = 2,
-  click_script = "$CONFIG_DIR/plugins/music/music_click.sh",
+  script = "/Users/alex/.config/sketchybar/plugins/music/music.sh",
+  click_script = "/Users/alex/.config/sketchybar/plugins/music/music_click.sh",
   popup = { height = 35, background = { border_width = 0 } },
 })
-
-music:subscribe({ "routine", "forced" }, function(env)
-  sbar.exec("$CONFIG_DIR/plugins/music/music.sh")
-end)
 
 music:subscribe("mouse.exited.global", function()
   music:set({ popup = { drawing = false } })

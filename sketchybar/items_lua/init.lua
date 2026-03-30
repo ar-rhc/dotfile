@@ -1,4 +1,4 @@
--- Left side
+-- Left side (order matters: first added = leftmost)
 require("items_lua.apple")
 require("items_lua.menu_trigger")
 require("items_lua.spaces")
@@ -8,7 +8,7 @@ require("items_lua.timer")
 -- Center
 require("items_lua.service_mode")
 
--- Right side (added right-to-left)
+-- Right side (order matters: first added = rightmost)
 require("items_lua.calendar")
 require("items_lua.volume_desktop")
 require("items_lua.notifications")

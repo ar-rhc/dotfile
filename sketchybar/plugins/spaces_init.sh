@@ -50,6 +50,9 @@ for m in $monitors; do
                  label.y_offset=-1 \
                  background.color=$BACKGROUND_1 \
                  background.border_color=$BACKGROUND_2 \
+                 background.border_width=2 \
+                 background.corner_radius=9 \
+                 background.height=26 \
                  script="$CONFIG_DIR/plugins/space.sh" \
                --subscribe space.$sid aerospace_workspace_change display_change system_woke mouse.clicked mouse.entered mouse.exited
 

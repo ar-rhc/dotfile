@@ -11,7 +11,7 @@ local front_app = sbar.add("item", "front_app", {
 })
 
 front_app:subscribe("front_app_switched", function(env)
-  sbar.exec("$CONFIG_DIR/plugins/icon_map.sh '" .. env.INFO .. "'", function(icon)
+  sbar.exec("/bin/bash -c \"/Users/alex/.config/sketchybar/plugins/icon_map.sh '" .. env.INFO .. "'\"", function(icon)
     front_app:set({
       label = { string = env.INFO },
       icon = { string = icon },

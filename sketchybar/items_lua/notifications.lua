@@ -1,5 +1,3 @@
-local colors = require("colors")
-
 -- Pre-add notification items (hidden by default)
 local notif_apps = { "mail", "messages", "whatsapp", "wechat" }
 for _, app in ipairs(notif_apps) do
@@ -12,7 +10,7 @@ for _, app in ipairs(notif_apps) do
   })
 end
 
--- Invisible trigger item that runs the notification check script
+-- Invisible trigger item
 local notifications = sbar.add("item", "notifications", {
   position = "right",
   updates = "on",
@@ -26,5 +24,5 @@ local notifications = sbar.add("item", "notifications", {
 })
 
 notifications:subscribe({ "routine", "forced", "system_woke" }, function(env)
-  sbar.exec("$CONFIG_DIR/plugins/notifications.sh")
+  sbar.exec("/bin/bash -c 'export CONFIG_DIR=/Users/alex/.config/sketchybar; /Users/alex/.config/sketchybar/plugins/notifications.sh'")
 end)

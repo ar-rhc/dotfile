@@ -11,7 +11,7 @@ local volume = sbar.add("item", "volume_desktop", {
   label = { drawing = false },
   update_freq = 5,
   updates = "on",
-  click_script = "$CONFIG_DIR/plugins/volume_desktop_click.sh",
+  click_script = "/Users/alex/.config/sketchybar/plugins/volume_desktop_click.sh",
 })
 
 local slider = sbar.add("slider", "volume_desktop_slider", 0, {

@@ -6,13 +6,10 @@ local weather = sbar.add("item", "weather", {
     font = { family = "Hack Nerd Font", style = "Regular", size = 13.0 },
   },
   update_freq = 1800,
-  click_script = "$CONFIG_DIR/plugins/scripts/weather_click.sh",
+  updates = "on",
+  click_script = "/Users/alex/.config/sketchybar/plugins/scripts/weather_click.sh",
 })
 
 weather:subscribe({ "routine", "forced" }, function(env)
-  sbar.exec("$CONFIG_DIR/plugins/weather.sh")
-end)
-
-weather:subscribe("mouse.clicked", function(env)
-  sbar.exec("$CONFIG_DIR/plugins/scripts/weather_click.sh")
+  sbar.exec("/bin/bash -c 'export CONFIG_DIR=/Users/alex/.config/sketchybar; /Users/alex/.config/sketchybar/plugins/weather.sh'")
 end)

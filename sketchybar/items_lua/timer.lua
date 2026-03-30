@@ -2,7 +2,7 @@ local colors = require("colors")
 local icons = require("icons")
 local settings = require("settings")
 
-local POMODORO = "python3 $CONFIG_DIR/plugins/pomodoro.py"
+local POMODORO = "python3 /Users/alex/.config/sketchybar/plugins/pomodoro.py"
 
 local timer = sbar.add("item", "timer", {
   icon = { string = icons.timer.idle, color = colors.grey },
@@ -75,7 +75,7 @@ end
 sbar.add("item", "timer.custom", {
   position = "popup.timer",
   label = { string = "Custom…" },
-  click_script = [[sketchybar --set timer popup.drawing=off; mins=$(osascript -e 'text returned of (display dialog "Enter minutes:" default answer "15")' 2>/dev/null) && [ -n "$mins" ] && python3 $CONFIG_DIR/plugins/pomodoro.py timer $(($mins * 60))]],
+  click_script = [[sketchybar --set timer popup.drawing=off; mins=$(osascript -e 'text returned of (display dialog "Enter minutes:" default answer "15")' 2>/dev/null) && [ -n "$mins" ] && python3 /Users/alex/.config/sketchybar/plugins/pomodoro.py timer $(($mins * 60))]],
 })
 
 -- Stopwatch

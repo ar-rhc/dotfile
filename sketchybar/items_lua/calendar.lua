@@ -1,6 +1,12 @@
 local colors = require("colors")
 local settings = require("settings")
 
+local calendar_icons = {
+  "􃌦","􃌧","􃌨","􃌩","􃌪","􃌫","􃌬","􃌭","􃌮","􃌯",
+  "􃌰","􃌱","􃌲","􃌳","􃌴","􃌵","􃌶","􃌷","􃌸","􃌹",
+  "􃌺","􃌻","􃌼","􃌽","􃌾","􃌿","􃍀","􃍁","􃍂","􃍃","􃍄",
+}
+
 local cal = sbar.add("item", "calendar", {
   position = "right",
   icon = {
@@ -9,9 +15,15 @@ local cal = sbar.add("item", "calendar", {
   },
   label = { align = "right" },
   update_freq = 60,
-  click_script = "$CONFIG_DIR/plugins/zen.sh",
+  updates = "on",
+  click_script = "/Users/alex/.config/sketchybar/plugins/zen.sh",
 })
 
 cal:subscribe({ "routine", "forced", "system_woke" }, function(env)
-  sbar.exec("$CONFIG_DIR/plugins/calendar.sh")
+  local day = tonumber(os.date("%d"))
+  local icon = calendar_icons[day] or "􀉉"
+  cal:set({
+    icon = { string = icon },
+    label = { string = os.date("%a %d %b - %H:%M") },
+  })
 end)

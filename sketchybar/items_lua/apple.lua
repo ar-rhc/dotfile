@@ -39,14 +39,14 @@ sbar.add("item", "apple.aero_apps", {
   position = "popup.apple.logo",
   icon = { string = "􀫵" },
   label = { string = "Apps List", max_chars = 180 },
-  click_script = "$CONFIG_DIR/plugins/aerospace/aerospace_apps.sh",
+  click_script = "/Users/alex/.config/sketchybar/plugins/aerospace/aerospace_apps.sh",
 })
 
 sbar.add("item", "apple.aero_windows", {
   position = "popup.apple.logo",
   icon = { string = "􀏜" },
   label = { string = "Windows List", max_chars = 180 },
-  click_script = "$CONFIG_DIR/plugins/aerospace/aerospace_windows.sh",
+  click_script = "/Users/alex/.config/sketchybar/plugins/aerospace/aerospace_windows.sh",
 })
 
 sbar.add("item", "apple.lock", {

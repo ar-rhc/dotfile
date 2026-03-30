@@ -4,13 +4,8 @@ local settings = require("settings")
 -- Register aerospace event
 sbar.add("event", "aerospace_workspace_change")
 
--- Space items are created by a shell script at init time because
--- AeroSpace queries (list-workspaces, list-windows) require shell execution.
--- The shell script creates space.* items, then Lua handles events via space_creator.
-
--- Execute the space creation shell script synchronously at config time
-local config_dir = os.getenv("CONFIG_DIR") or os.getenv("HOME") .. "/.config/sketchybar"
-os.execute(config_dir .. "/plugins/spaces_init.sh")
+-- Note: space.* items are created by spaces_init.sh called from init.lua
+-- AFTER sbar.end_config() to ensure correct ordering.
 
 -- Space creator item handles workspace change events
 local space_creator = sbar.add("item", "space_creator", {
@@ -25,7 +20,6 @@ local space_creator = sbar.add("item", "space_creator", {
   display = "active",
 })
 
--- Workspace change handler — delegates to shell for AeroSpace queries
 space_creator:subscribe({ "aerospace_workspace_change", "display_change" }, function(env)
-  sbar.exec("$CONFIG_DIR/plugins/space_windows.sh", function() end)
+  sbar.exec("/bin/bash -c 'export CONFIG_DIR=/Users/alex/.config/sketchybar; /Users/alex/.config/sketchybar/plugins/space_windows.sh'")
 end)
