@@ -1,7 +1,28 @@
 local colors = require("colors")
 local settings = require("settings")
 
-local NUM_PROCS = 5
+local NUM_PROCS = 8
+
+-- System processes that should NOT be killed (shown in grey)
+local SYSTEM_PROCS = {
+  -- Core OS
+  kernel_task = true, launchd = true, WindowServer = true, loginwindow = true,
+  -- Essential services
+  opendirectoryd = true, configd = true, diskarbitrationd = true, fseventsd = true,
+  mds = true, mds_stores = true, notifyd = true, powerd = true, coreaudiod = true,
+  bluetoothd = true, UserEventAgent = true, cfprefsd = true, coreduetd = true,
+  dasd = true, trustd = true, securityd = true, systemstats = true, syslogd = true,
+  -- System UI
+  Finder = true, Dock = true, SystemUIServer = true, ControlCenter = true,
+  -- Other system
+  logd = true, watchdogd = true, filecoordinationd = true, fileproviderd = true,
+  nsurlsessiond = true, lsd = true, iconservicesagent = true, distnoted = true,
+  runningboardd = true, symptomsd = true, sharingd = true, rapportd = true,
+  mdworker_shared = true, bird = true, cloudd = true, assistantd = true,
+  suggestd = true, searchpartyd = true, siriactionsd = true, mediaremoted = true,
+  ["com.apple.WebKit.WebContent"] = true, ["com.apple.WebKit.GPU"] = true,
+  ["com.apple.WebKit.Networking"] = true, AMPDeviceDiscoveryAgent = true,
+}
 
 local ram = sbar.add("item", "ram", {
   position = "right",
@@ -76,34 +97,31 @@ end)
 
 -- Click: show top memory-consuming processes
 ram:subscribe("mouse.clicked", function()
-  ram:set({ popup = { drawing = "toggle" } })
-
-  -- Fetch top processes by memory
-  sbar.exec("ps -Ao pmem,comm -r | head -" .. (NUM_PROCS + 1) .. " | tail -" .. NUM_PROCS, function(result)
+  sbar.exec("ps -Ao pmem,comm -r | head -" .. (NUM_PROCS + 1) .. " | tail -" .. NUM_PROCS .. " | awk '{mem=$1; $1=\"\"; cmd=$0; gsub(/^\\s+/,\"\",cmd); n=cmd; gsub(/.*\\//,\"\",n); gsub(/\\.app$/,\"\",n); print mem \"|\" n}'", function(result)
     result = result:gsub("%s+$", "")
     local i = 1
     for line in result:gmatch("[^\n]+") do
       if i > NUM_PROCS then break end
-      local mem, cmd = line:match("^%s*([%d%.]+)%s+(.+)")
-      if mem and cmd then
-        -- Get just the app name from the path
-        local app_name = cmd:match("([^/]+)$") or cmd
-        -- Clean up common suffixes
-        app_name = app_name:gsub("%.app$", "")
+      local mem, app_name = line:match("^([%d%.]+)|(.+)")
+      if mem and app_name then
+        local is_system = SYSTEM_PROCS[app_name] or false
+        local label_color = is_system and colors.grey or colors.white
+        local suffix = is_system and " ⚙" or ""
 
-        -- Try to get app icon
+        proc_items[i]:set({
+          label = { string = app_name .. "  " .. mem .. "%" .. suffix, color = label_color },
+          icon = { string = "—" },
+        })
+
+        local idx = i
         sbar.exec("/Users/alex/.config/sketchybar/plugins/icon_map.sh '" .. app_name .. "'", function(icon)
           icon = icon:gsub("%s+$", "")
-          if proc_items[i] then
-            proc_items[i]:set({
-              icon = { string = icon },
-              label = { string = app_name .. "  " .. mem .. "%" },
-            })
-          end
+          proc_items[idx]:set({ icon = { string = icon, color = label_color } })
         end)
       end
       i = i + 1
     end
+    ram:set({ popup = { drawing = "toggle" } })
   end)
 end)
 
