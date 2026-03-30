@@ -89,6 +89,7 @@ source "$ITEM_DIR/calendar.sh"
 source "$ITEM_DIR/volume_desktop.sh"
 source "$ITEM_DIR/notifications.sh"
 source "$ITEM_DIR/input_source.sh"
+source "$ITEM_DIR/trash.sh"
 source "$ITEM_DIR/next_event.sh"
 
 
