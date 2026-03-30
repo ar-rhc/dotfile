@@ -1,6 +1,8 @@
 local colors = require("colors")
 local settings = require("settings")
 
+local NUM_PROCS = 5
+
 local ram = sbar.add("item", "ram", {
   position = "right",
   icon = {
@@ -16,16 +18,33 @@ local ram = sbar.add("item", "ram", {
   padding_right = 3,
   update_freq = 10,
   updates = "on",
+  popup = { height = 30, background = { border_width = 0 } },
 })
 
+-- Popup items for top processes
+local popup_width = 250
+local proc_items = {}
+for i = 1, NUM_PROCS do
+  proc_items[i] = sbar.add("item", "ram.proc" .. i, {
+    position = "popup.ram",
+    icon = {
+      font = { family = "sketchybar-app-font", style = "Regular", size = 14.0 },
+      width = 30,
+      align = "center",
+    },
+    label = {
+      font = { family = settings.font.text, style = "Regular", size = 12.0 },
+      width = popup_width - 30,
+    },
+  })
+end
+
+-- Update RAM usage
 ram:subscribe({ "routine", "forced" }, function()
   sbar.exec([[
     PAGE_SIZE=$(sysctl -n vm.pagesize)
     TOTAL=$(sysctl -n hw.memsize)
     STATS=$(vm_stat)
-    FREE=$(echo "$STATS" | awk '/Pages free/ {gsub(/\./,"",$3); print $3}')
-    INACTIVE=$(echo "$STATS" | awk '/Pages inactive/ {gsub(/\./,"",$3); print $3}')
-    SPECULATIVE=$(echo "$STATS" | awk '/Pages speculative/ {gsub(/\./,"",$3); print $3}')
     WIRED=$(echo "$STATS" | awk '/Pages wired/ {gsub(/\./,"",$4); print $4}')
     ACTIVE=$(echo "$STATS" | awk '/Pages active/ {gsub(/\./,"",$3); print $3}')
     COMPRESSED=$(echo "$STATS" | awk '/Pages occupied by compressor/ {gsub(/\./,"",$6); print $6}')
@@ -53,4 +72,41 @@ ram:subscribe({ "routine", "forced" }, function()
       icon = { color = color },
     })
   end)
+end)
+
+-- Click: show top memory-consuming processes
+ram:subscribe("mouse.clicked", function()
+  ram:set({ popup = { drawing = "toggle" } })
+
+  -- Fetch top processes by memory
+  sbar.exec("ps -Ao pmem,comm -r | head -" .. (NUM_PROCS + 1) .. " | tail -" .. NUM_PROCS, function(result)
+    result = result:gsub("%s+$", "")
+    local i = 1
+    for line in result:gmatch("[^\n]+") do
+      if i > NUM_PROCS then break end
+      local mem, cmd = line:match("^%s*([%d%.]+)%s+(.+)")
+      if mem and cmd then
+        -- Get just the app name from the path
+        local app_name = cmd:match("([^/]+)$") or cmd
+        -- Clean up common suffixes
+        app_name = app_name:gsub("%.app$", "")
+
+        -- Try to get app icon
+        sbar.exec("/Users/alex/.config/sketchybar/plugins/icon_map.sh '" .. app_name .. "'", function(icon)
+          icon = icon:gsub("%s+$", "")
+          if proc_items[i] then
+            proc_items[i]:set({
+              icon = { string = icon },
+              label = { string = app_name .. "  " .. mem .. "%" },
+            })
+          end
+        end)
+      end
+      i = i + 1
+    end
+  end)
+end)
+
+ram:subscribe("mouse.exited.global", function()
+  ram:set({ popup = { drawing = false } })
 end)
