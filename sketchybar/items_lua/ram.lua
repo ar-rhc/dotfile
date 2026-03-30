@@ -45,6 +45,8 @@ local ram = sbar.add("item", "ram", {
 -- Popup items for top processes
 local popup_width = 250
 local proc_items = {}
+local proc_names = {}  -- track process names for kill
+
 for i = 1, NUM_PROCS do
   proc_items[i] = sbar.add("item", "ram.proc" .. i, {
     position = "popup.ram",
@@ -58,6 +60,36 @@ for i = 1, NUM_PROCS do
       width = popup_width - 30,
     },
   })
+  proc_names[i] = { name = "", is_system = false }
+end
+
+-- Cmd+click to kill process (only non-system)
+for i = 1, NUM_PROCS do
+  local idx = i
+  sbar.add("event", "ram_kill_" .. i)
+  sbar.exec("sketchybar --set ram.proc" .. i .. " click_script='sketchybar --trigger ram_kill_" .. i .. " MODIFIER=$MODIFIER'")
+
+  ram:subscribe("ram_kill_" .. i, function(env)
+    local p = proc_names[idx]
+    if not p or p.name == "" then return end
+
+    if env.MODIFIER ~= "cmd" then return end
+
+    if p.is_system then
+      proc_items[idx]:set({ label = { string = "⚠ System process!", color = colors.red } })
+      sbar.delay(1.5, function()
+        proc_items[idx]:set({ label = { string = p.name .. "  ⚙", color = colors.grey } })
+      end)
+      return
+    end
+
+    -- Kill the process
+    sbar.exec("killall '" .. p.name .. "' 2>/dev/null")
+    proc_items[idx]:set({ label = { string = "✕ " .. p.name .. " killed", color = colors.red } })
+    sbar.delay(1.5, function()
+      ram:set({ popup = { drawing = false } })
+    end)
+  end)
 end
 
 -- Update RAM usage
@@ -108,6 +140,7 @@ ram:subscribe("mouse.clicked", function()
         local label_color = is_system and colors.grey or colors.white
         local suffix = is_system and " ⚙" or ""
 
+        proc_names[i] = { name = app_name, is_system = is_system }
         proc_items[i]:set({
           label = { string = app_name .. "  " .. mem .. "%" .. suffix, color = label_color },
           icon = { string = "—" },
