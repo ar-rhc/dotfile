@@ -9,7 +9,8 @@ BTT_TRIGGER_SHIFT_CLICK="C6F1ADBE-9DC6-40BD-A5A2-BA4EE5DF0FAD"            # shif
 # We only care about left click and shift + left click.
 
 if [ "$BUTTON" = "right" ]; then
-  osascript -e "tell application \"BetterTouchTool\" to execute_assigned_actions_for_trigger \"$BTT_TRIGGER_SHIFT_CLICK\"" 2>/dev/null
+  osascript -e "tell application "BetterTouchTool" to execute_assigned_actions_for_trigger "7C339A79-000D-475F-BDE6-4F38094C9367"" 2>/dev/null
+  
 elif [ "$BUTTON" = "left" ] && [ "$MODIFIER" = "cmd" ]; then
   open -a "Calendar"
 elif [ "$BUTTON" = "left" ]; then

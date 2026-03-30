@@ -1,19 +1,30 @@
 #!/usr/bin/env bash
- 
-echo AEROSPACE_PREV_WORKSPACE: $AEROSPACE_PREV_WORKSPACE, \
- AEROSPACE_FOCUSED_WORKSPACE: $AEROSPACE_FOCUSED_WORKSPACE \
- SELECTED: $SELECTED \
- BG2: $BG2 \
- INFO: $INFO \
- SENDER: $SENDER \
- NAME: $NAME \
-  >> ~/aaaa
 
 source "$CONFIG_DIR/colors.sh"
 
 AEROSPACE_FOCUSED_MONITOR=$(aerospace list-monitors --focused | awk '{print $1}')
-AEROSAPCE_WORKSPACE_FOCUSED_MONITOR=$(aerospace list-workspaces --monitor focused --empty no)
-AEROSPACE_EMPTY_WORKESPACE=$(aerospace list-workspaces --monitor focused --empty)
+AEROSPACE_WORKSPACE_FOCUSED_MONITOR=$(aerospace list-workspaces --monitor focused --empty no)
+AEROSPACE_EMPTY_WORKSPACE=$(aerospace list-workspaces --monitor focused --empty)
+
+# Set space display for all current monitors (used on workspace change and display connect/disconnect)
+# 2 monitors: AeroSpace order differs from SketchyBar (swap 1<->2). 3+ monitors: use direct mapping.
+refresh_space_displays() {
+  monitors=$(aerospace list-monitors 2>/dev/null | awk '{print $1}')
+  num_monitors=$(echo "$monitors" | wc -w | tr -d ' ')
+  for m in $monitors; do
+    if [ "$num_monitors" -eq 2 ]; then
+      sketchy_display=$((3 - m))
+    else
+      sketchy_display=$m
+    fi
+    for w in $(aerospace list-workspaces --monitor "$m" --empty no 2>/dev/null); do
+      sketchybar --set space."$w" display="$sketchy_display" 2>/dev/null || true
+    done
+    for w in $(aerospace list-workspaces --monitor "$m" --empty 2>/dev/null); do
+      sketchybar --set space."$w" display=0 2>/dev/null || true
+    done
+  done
+}
 
 reload_workspace_icon() {
   # echo reload_workspace_icon "$@" >> ~/aaaa
@@ -26,7 +37,7 @@ reload_workspace_icon() {
       icon_strip+=" $($CONFIG_DIR/plugins/icon_map.sh "$app")"
     done <<< "${apps}"
   else
-    icon_strip=" —"
+    icon_strip=""  # Empty string for empty workspaces - only show space number
   fi
 
   sketchybar --animate sin 10 --set space.$@ label="$icon_strip"
@@ -76,18 +87,11 @@ if [ "$SENDER" = "aerospace_workspace_change" ]; then
                          label.highlight=false \
                          background.border_color=$BACKGROUND_2
 
-  # if [ "$AEROSPACE_FOCUSED_WORKSPACE" -gt 3 ]; then
-  #   sketchybar --animate sin 10 --set space.$AEROSPACE_FOCUSED_WORKSPACE display=1
-  # fi
-  ## focused 된 모니터에 space 상태 보이게 설정
-  for i in $AEROSAPCE_WORKSPACE_FOCUSED_MONITOR; do
-    sketchybar --set space.$i display=$AEROSPACE_FOCUSED_MONITOR
-  done
+  # Refresh display for every space on all current monitors (fixes two-monitor and disconnect)
+  refresh_space_displays
 
-  for i in $AEROSPACE_EMPTY_WORKESPACE; do
-    sketchybar --set space.$i display=0
-  done
+fi
 
-  sketchybar --set space.$AEROSPACE_FOCUSED_WORKSPACE display=$AEROSPACE_FOCUSED_MONITOR
-
+if [ "$SENDER" = "display_change" ]; then
+  refresh_space_displays
 fi

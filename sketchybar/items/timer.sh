@@ -8,27 +8,34 @@ sketchybar --add event reset_timer
  timer=(
   icon="􁙆"
   script="$PLUGIN_DIR/reset_timer.sh"
-  click_script="sketchybar --set timer popup.drawing=toggle; sketchybar --trigger reset_timer"
+  click_script="sketchybar --trigger reset_timer"
   popup.background.border_width=0
+  popup.height=35
   padding_left=10
  )
 
  # Stopwatch mode
  stopwatch=(
   label="SW Mode"
-  click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py"
+  click_script="sketchybar --set timer popup.drawing=off; python3 $PLUGIN_DIR/timer.py"
  )
 
  # Presets
- preset1=(label="3 min"  click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 180")
- preset2=(label="5 min"  click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 300")
- preset3=(label="10 min" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 600")
- preset4=(label="20 min" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 1200")
- preset5=(label="1 hour" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 3600")
+ preset1=(label="3 min"  click_script="sketchybar --set timer popup.drawing=off; python3 $PLUGIN_DIR/timer.py 180")
+ preset2=(label="5 min"  click_script="sketchybar --set timer popup.drawing=off; python3 $PLUGIN_DIR/timer.py 300")
+ preset3=(label="10 min" click_script="sketchybar --set timer popup.drawing=off; python3 $PLUGIN_DIR/timer.py 600")
+ preset4=(label="20 min" click_script="sketchybar --set timer popup.drawing=off; python3 $PLUGIN_DIR/timer.py 1200")
+ preset5=(label="1 hour" click_script="sketchybar --set timer popup.drawing=off; python3 $PLUGIN_DIR/timer.py 3600")
+
+ # Custom time via dialog
+ custom=(
+  label="Custom…"
+  click_script="sketchybar --set timer popup.drawing=off; mins=\$(osascript -e 'text returned of (display dialog \"Enter minutes:\" default answer \"15\")' 2>/dev/null) && [ -n \"\$mins\" ] && python3 $PLUGIN_DIR/timer.py \$((\$mins * 60))"
+ )
 
 sketchybar --add item timer left \
            --set timer "${timer[@]}" \
-           --subscribe timer reset_timer \
+           --subscribe timer reset_timer mouse.entered mouse.exited mouse.exited.global \
            --add item timer.stopwatch popup.timer \
            --set timer.stopwatch "${stopwatch[@]}" \
            --add item timer.preset1 popup.timer \
@@ -40,4 +47,6 @@ sketchybar --add item timer left \
            --add item timer.preset4 popup.timer \
            --set timer.preset4 "${preset4[@]}" \
            --add item timer.preset5 popup.timer \
-           --set timer.preset5 "${preset5[@]}"
+           --set timer.preset5 "${preset5[@]}" \
+           --add item timer.custom popup.timer \
+           --set timer.custom "${custom[@]}"

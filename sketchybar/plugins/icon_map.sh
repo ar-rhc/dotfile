@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
+
 ### START-OF-ICON-MAP
 function __icon_map() {
     case "$1" in
    "Live")
         icon_result=":ableton:"
         ;;
-   "Acrobat")
+   "Acrobat" | "Acrobat Pro DC")
         icon_result=":acrobat:"
         ;;
    "Activity Monitor" | "Aktivitätsanzeige")
@@ -20,6 +21,9 @@ function __icon_map() {
         ;;
    "AFFiNE")
         icon_result=":affine:"
+        ;;
+   "Affinity")
+        icon_result=":affinity:"
         ;;
    "Affinity Designer")
         icon_result=":affinity_designer:"
@@ -89,6 +93,9 @@ function __icon_map() {
         ;;
    "Arduino" | "Arduino IDE")
         icon_result=":arduino:"
+        ;;
+   "Aseprite")
+        icon_result=":aseprite:"
         ;;
    "Atom")
         icon_result=":atom:"
@@ -243,10 +250,9 @@ function __icon_map() {
    "CurseForge")
         icon_result=":curseforge:"
         ;;
-   "Cursor")
+   "Cursor"*)
         icon_result=":cursor_ide:"
         ;;
-
    "Cypress")
         icon_result=":cypress:"
         ;;
@@ -319,6 +325,9 @@ function __icon_map() {
    "Dropbox")
         icon_result=":dropbox:"
         ;;
+   "DVD Player")
+        icon_result=":dvd_player:"
+        ;;
    "Eagle")
         icon_result=":eagle:"
         ;;
@@ -364,6 +373,9 @@ function __icon_map() {
    "Firefox Developer Edition" | "Firefox Nightly")
         icon_result=":firefox_developer_edition:"
         ;;
+   "Floorp")
+        icon_result=":floorp:"
+        ;;
    "FL Studio")
         icon_result=":flstudio:"
         ;;
@@ -382,7 +394,7 @@ function __icon_map() {
    "ForkLift")
         icon_result=":forklift:"
         ;;
-   "Foxit PDF Reader")
+   "Foxit PDF Reader" )
         icon_result=":foxit_reader:"
         ;;
    "FreeCAD")
@@ -514,6 +526,9 @@ function __icon_map() {
    "Jane Reader")
         icon_result=":jane_reader:"
         ;;
+   "JDownloader" | "JDownloader2" | "Uninstall JDownloader")
+        icon_result=":jdownloader:"
+        ;;
    "Jellyfin Media Player")
         icon_result=":jellyfin:"
         ;;
@@ -612,6 +627,9 @@ function __icon_map() {
         ;;
    "Canary Mail" | "HEY" | "Mail" | "Mailspring" | "MailMate" | "Superhuman" | "Spark" | "Spark Mail" | "邮件" | "メール")
         icon_result=":mail:"
+        ;;
+   "MakeMKV")
+        icon_result=":makemkv:"
         ;;
    "MAMP" | "MAMP PRO")
         icon_result=":mamp:"
@@ -889,6 +907,9 @@ function __icon_map() {
    "Proton VPN" | "ProtonVPN")
         icon_result=":proton_vpn:"
         ;;
+   "Proxyman")
+        icon_result=":proxyman:"
+        ;;
    "PrusaSlicer" | "SuperSlicer")
         icon_result=":prusaslicer:"
         ;;
@@ -897,6 +918,9 @@ function __icon_map() {
         ;;
    "qBittorrent")
         icon_result=":qbittorrent:"
+        ;;
+   "QGIS")
+        icon_result=":qgis:"
         ;;
    "QLMarkdown")
         icon_result=":qlmarkdown:"
@@ -954,6 +978,9 @@ function __icon_map() {
         ;;
    "Royal TSX")
         icon_result=":royaltsx:"
+        ;;
+   "RStudio")
+        icon_result=":rstudio:"
         ;;
    "RustDesk")
         icon_result=":rustdesk:"
@@ -1051,6 +1078,9 @@ function __icon_map() {
    "TablePlus")
         icon_result=":tableplus:"
         ;;
+   "Tailscale")
+        icon_result=":tailscale:"
+        ;;
    "Tana")
         icon_result=":tana:"
         ;;
@@ -1086,6 +1116,9 @@ function __icon_map() {
         ;;
    "Timery")
         icon_result=":timery:"
+        ;;
+   "Timing")
+        icon_result=":timingapp:"
         ;;
    "Tiny RDM")
         icon_result=":tinyrdm:"
@@ -1189,8 +1222,11 @@ function __icon_map() {
    "Xcode")
         icon_result=":xcode:"
         ;;
+   "Yaak")
+        icon_result=":yaak:"
+        ;;
    "Yandex Browser"  | "Yandex Browser" | "Yandex")
-        icon_result=":yandex_bower:"
+        icon_result=":yandex_browser:"
         ;;
    "Yandex Music")
         icon_result=":yandex_music:"
@@ -1233,5 +1269,7 @@ function __icon_map() {
         ;;
     esac
 }
+### END-OF-ICON-MAP
+
 __icon_map "$1"
 echo "$icon_result"

@@ -15,7 +15,7 @@ export TZ="Pacific/Auckland"
 # TEST_CALENDAR="Work"
 
 # Calendars to exclude (comma-separated)
-EXCLUDE_CALENDARS="Shorebird Centre Tides & Events"
+EXCLUDE_CALENDARS="Shorebird Centre Tides & Events, Tiritiri Ferry Schedule"
 
 # Display settings
 MAX_TITLE_LENGTH=20
@@ -172,6 +172,32 @@ parse_event_line() {
 # EVENT SELECTION LOGIC
 # -----------------------------------------------------------------------------
 
+# Check if a next event should be displayed based on time constraints
+# Returns 0 if event should be shown, 1 otherwise
+should_show_next_event() {
+  local start_sec="$1"
+  local now_sec="$2"
+  
+  # Get current date and event date in YYYY-MM-DD format
+  local now_date=$(date -r "$now_sec" +%Y-%m-%d)
+  local event_date=$(date -r "$start_sec" +%Y-%m-%d)
+  
+  # If event is today, show it regardless of hours
+  if [ "$event_date" = "$now_date" ]; then
+    return 0
+  fi
+  
+  # If event is on a different date, only show if within 10 hours
+  local time_until=$((start_sec - now_sec))
+  local hours_until=$((time_until / 3600))
+  
+  if [ $hours_until -le 10 ]; then
+    return 0
+  fi
+  
+  return 1
+}
+
 find_best_event() {
   local events="$1"
   local now_sec=$(date +%s)
@@ -203,11 +229,16 @@ find_best_event() {
     
     # Check if this is the next upcoming event
     if [ $start_sec -gt $now_sec ]; then
-      if [ $next_start -eq 0 ] || [ $start_sec -lt $next_start ]; then
-        next_event="$title"
-        next_start=$start_sec
-        next_end=$end_sec
-        debug "Found next event: $title"
+      # Only consider events that meet the time constraints
+      if should_show_next_event "$start_sec" "$now_sec"; then
+        if [ $next_start -eq 0 ] || [ $start_sec -lt $next_start ]; then
+          next_event="$title"
+          next_start=$start_sec
+          next_end=$end_sec
+          debug "Found next event: $title"
+        fi
+      else
+        debug "Skipping event $title (outside time constraints)"
       fi
     fi
   done
@@ -307,7 +338,7 @@ main() {
   local best_event=$(find_best_event "$events")
   
   if [ $? -ne 0 ] || [ -z "$best_event" ]; then
-    update_widget "No upcoming events"
+    update_widget "Free Day"
     exit 0
   fi
   
@@ -323,3 +354,4 @@ main() {
 
 # Run main function
 main "$@"
+

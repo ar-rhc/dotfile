@@ -7,6 +7,12 @@ sketchybar --add item notif.mail right \
 sketchybar --add item notif.messages right \
     --set notif.messages drawing=off
 
+sketchybar --add item notif.whatsapp right \
+    --set notif.whatsapp drawing=off
+
+sketchybar --add item notif.wechat right \
+    --set notif.wechat drawing=off
+
 # Add the main notifications item that triggers the script
 # IMPORTANT: We use a tiny invisible item (width=0) instead of drawing=off
 # because drawing=off prevents scripts from running even with updates=on

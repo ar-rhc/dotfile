@@ -46,6 +46,7 @@ cmd_open=(
 
 sketchybar --add item music center \
            --set music "${music[@]}" \
+           --subscribe music mouse.exited mouse.exited.global \
            --add item music.cmd_playpause popup.music \
            --set music.cmd_playpause "${cmd_playpause[@]}" \
            --add item music.cmd_next popup.music \

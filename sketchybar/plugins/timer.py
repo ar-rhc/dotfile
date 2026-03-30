@@ -37,6 +37,12 @@ def countdown(end_time: int):
         time.sleep(1)
 
     set_label('Time Up!', WHITE)
+    # Show macOS notification
+    msg = 'Your timer has finished.'
+    os.system(
+        f'''osascript -e 'display notification "{msg}" with title "Timer" sound name "Funk"' '''
+    )
+    # Play sound 3 times for emphasis
     for _ in range(3):
         os.system('afplay /System/Library/Sounds/Funk.aiff')
     set_label('')

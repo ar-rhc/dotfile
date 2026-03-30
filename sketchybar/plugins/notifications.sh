@@ -23,6 +23,8 @@ check_app_badge() {
     case "$app_name" in
         "Mail") bundle_id="com.apple.mail" ;;
         "Messages") bundle_id="com.apple.MobileSMS" ;;
+        "WhatsApp") bundle_id="net.whatsapp.WhatsApp" ;;
+        "WeChat") bundle_id="com.tencent.xinWeChat" ;;
         *) return ;;
     esac
     
@@ -106,4 +108,58 @@ if [ -n "$MESSAGES_BADGE" ] && [ "$MESSAGES_BADGE" != "0" ] && [ "$MESSAGES_BADG
     sketchybar --set notif.messages drawing=on
 else
     sketchybar --set notif.messages drawing=off
+fi
+
+# Check WhatsApp app
+WHATSAPP_BADGE=$(check_app_badge "WhatsApp")
+if [ -n "$WHATSAPP_BADGE" ] && [ "$WHATSAPP_BADGE" != "0" ] && [ "$WHATSAPP_BADGE" != "missing value" ]; then
+    WHATSAPP_ICON=$($CONFIG_DIR/plugins/icon_map.sh "WhatsApp")
+    # Set all properties
+    sketchybar --set notif.whatsapp \
+        icon="$WHATSAPP_ICON" \
+        icon.font="sketchybar-app-font:Regular:16.0" \
+        icon.color="$ICON_COLOR" \
+        label="$WHATSAPP_BADGE" \
+        label.color="$ICON_COLOR" \
+        label.font="$FONT:Bold:14.0" \
+        label.padding_right=6 \
+        background.color=0x90494949 \
+        background.corner_radius=9 \
+        background.height=26 \
+        icon.padding_left=6 \
+        icon.padding_right=2 \
+        padding_left=0 \
+        padding_right=6 \
+        click_script="open -a 'WhatsApp'"
+    # Set drawing separately (workaround for sketchybar bug)
+    sketchybar --set notif.whatsapp drawing=on
+else
+    sketchybar --set notif.whatsapp drawing=off
+fi
+
+# Check WeChat app
+WECHAT_BADGE=$(check_app_badge "WeChat")
+if [ -n "$WECHAT_BADGE" ] && [ "$WECHAT_BADGE" != "0" ] && [ "$WECHAT_BADGE" != "missing value" ]; then
+    WECHAT_ICON=$($CONFIG_DIR/plugins/icon_map.sh "WeChat")
+    # Set all properties
+    sketchybar --set notif.wechat \
+        icon="$WECHAT_ICON" \
+        icon.font="sketchybar-app-font:Regular:16.0" \
+        icon.color="$ICON_COLOR" \
+        label="$WECHAT_BADGE" \
+        label.color="$ICON_COLOR" \
+        label.font="$FONT:Bold:14.0" \
+        label.padding_right=6 \
+        background.color=0x90494949 \
+        background.corner_radius=9 \
+        background.height=26 \
+        icon.padding_left=6 \
+        icon.padding_right=2 \
+        padding_left=0 \
+        padding_right=6 \
+        click_script="open -a 'WeChat'"
+    # Set drawing separately (workaround for sketchybar bug)
+    sketchybar --set notif.wechat drawing=on
+else
+    sketchybar --set notif.wechat drawing=off
 fi

@@ -62,7 +62,11 @@ get_ordered_workspaces() {
   fi
 }
 
-for m in $(aerospace list-monitors | awk '{print $1}'); do
+# 2 monitors: swap AeroSpace 1<->2 for SketchyBar. 3+ monitors: direct mapping.
+monitors=$(aerospace list-monitors | awk '{print $1}')
+num_monitors=$(echo "$monitors" | wc -w | tr -d ' ')
+for m in $monitors; do
+  if [ "$num_monitors" -eq 2 ]; then sketchy_display=$((3 - m)); else sketchy_display=$m; fi
   for i in $(get_ordered_workspaces $m); do
     sid=$i
     space=(
@@ -71,7 +75,7 @@ for m in $(aerospace list-monitors | awk '{print $1}'); do
       icon.highlight_color=$ORANGE
       icon.padding_left=10
       icon.padding_right=10
-      display=$m
+      display=$sketchy_display
       padding_left=2
       padding_right=2
       label.padding_right=20
@@ -131,11 +135,11 @@ space_creator=(
 
 sketchybar --add item space_creator left               \
            --set space_creator "${space_creator[@]}"   \
-           --subscribe space_creator aerospace_workspace_change
+           --subscribe space_creator aerospace_workspace_change display_change
 
 
 
 
 # sketchybar  --add item change_windows left \
-#             --set change_windows script="$PLUGIN_DIR/change_windows.sh" \
+#             --set change_windows script="$PLUGIN_DIR/scripts/change_windows.sh" \
 #             --subscribe change_windows space_changes
