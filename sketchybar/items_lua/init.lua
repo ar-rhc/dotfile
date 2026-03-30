@@ -1,0 +1,20 @@
+-- Left side
+require("items_lua.apple")
+require("items_lua.menu_trigger")
+require("items_lua.spaces")
+require("items_lua.front_app")
+require("items_lua.timer")
+
+-- Center
+require("items_lua.service_mode")
+
+-- Right side (added right-to-left)
+require("items_lua.calendar")
+require("items_lua.volume_desktop")
+require("items_lua.notifications")
+require("items_lua.input_source")
+require("items_lua.trash")
+require("items_lua.next_event")
+require("items_lua.wifi")
+require("items_lua.weather")
+require("items_lua.music")
