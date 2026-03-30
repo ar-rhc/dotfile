@@ -202,12 +202,14 @@ backup_and_link() {
         fi
     fi
     
-    ln -sfn "$source" "$target"
+        ln -sfn "$source" "$target"
     echo -e "${GREEN}✅ Linked $name: $target → $source${NC}"
 }
 
 # Create symlinks
 backup_and_link ~/.aerospace.toml "$REPO_DIR/aerospace/aerospace.toml" "aerospace.toml"
+mkdir -p ~/.config/aerospace
+backup_and_link ~/.config/aerospace/scripts "$REPO_DIR/aerospace/scripts" "aerospace/scripts"
 backup_and_link ~/.config/sketchybar "$REPO_DIR/sketchybar" "sketchybar"
 backup_and_link ~/.hammerspoon "$REPO_DIR/hammerspoon" "hammerspoon"
 echo ""
