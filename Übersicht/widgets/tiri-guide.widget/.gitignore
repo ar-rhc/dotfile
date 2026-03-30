@@ -1,0 +1,6 @@
+# Private configuration file
+config.json
+
+# macOS
+.DS_Store
+
