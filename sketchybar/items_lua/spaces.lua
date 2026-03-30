@@ -179,11 +179,33 @@ local function reload_workspace_icons(ws_id)
   end)
 end
 
+local function highlight_focused()
+  sbar.exec("aerospace list-workspaces --focused", function(focused)
+    focused = focused:gsub("%s+$", "")
+    for ws_id, space in pairs(spaces) do
+      if ws_id == focused then
+        space:set({
+          icon = { highlight = true },
+          label = { highlight = true },
+          background = { border_color = colors.grey },
+        })
+      else
+        space:set({
+          icon = { highlight = false },
+          label = { highlight = false },
+          background = { border_color = colors.bg2 },
+        })
+      end
+    end
+  end)
+end
+
 local function refresh_all_focused()
   sbar.exec("aerospace list-workspaces --focused", function(focused)
     focused = focused:gsub("%s+$", "")
     reload_workspace_icons(focused)
   end)
+  highlight_focused()
 end
 
 -- Space creator handles workspace changes + display updates
@@ -205,3 +227,6 @@ end)
 space_creator:subscribe("window_moved", function()
   refresh_all_focused()
 end)
+
+-- Highlight active workspace on init
+highlight_focused()
