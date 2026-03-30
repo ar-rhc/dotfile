@@ -25,6 +25,7 @@ local slider = sbar.add("slider", "volume_desktop_slider", 0, {
     background = { height = 5, corner_radius = 3, color = colors.bg2 },
     knob = "􀀁",
   },
+  width = 0,
   padding_left = 0,
   padding_right = 0,
 })
@@ -58,24 +59,24 @@ volume:subscribe("mouse.entered", function(env)
     sbar.exec("betterdisplaycli get -n=LG --volume", function(vol)
       vol = vol:gsub("%s+", "")
       local pct = math.floor((tonumber(vol) or 0) * 100)
-      slider:set({ slider = { percentage = pct, width = 100 } })
+      slider:set({ width = "dynamic", slider = { percentage = pct, width = 100 } })
     end)
   end)
 end)
 
 volume:subscribe("mouse.exited.global", function(env)
   sbar.animate("tanh", 30, function()
-    slider:set({ slider = { width = 0 } })
+    slider:set({ width = 0, slider = { width = 0 } })
   end)
 end)
 
 slider:subscribe("mouse.entered", function()
-  slider:set({ slider = { width = 100 } })
+  slider:set({ width = "dynamic", slider = { width = 100 } })
 end)
 
 slider:subscribe("mouse.exited.global", function()
   sbar.animate("tanh", 30, function()
-    slider:set({ slider = { width = 0 } })
+    slider:set({ width = 0, slider = { width = 0 } })
   end)
 end)
 
