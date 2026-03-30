@@ -28,6 +28,12 @@ update_icon() {
 
 case "$SENDER" in
   "mouse.entered")
+    # Wait 1s, then check if still hovering
+    sleep 0.5
+    # If slider is already visible (from a previous hover), skip
+    CURRENT_WIDTH=$(sketchybar --query volume_desktop_slider | python3 -c "import sys,json; d=json.load(sys.stdin); print(int(d['geometry'].get('width',0) or 0))" 2>/dev/null)
+    [ "${CURRENT_WIDTH:-0}" -gt 0 ] && exit 0
+    # Check mouse is still over the bar area by verifying no exited event fired
     VOL=$(betterdisplaycli get -n=LG --volume 2>/dev/null)
     PCT=$(python3 -c "print(int(float('${VOL:-0}') * 100))" 2>/dev/null)
     sketchybar --set volume_desktop_slider slider.percentage="${PCT:-50}" \

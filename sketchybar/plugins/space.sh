@@ -53,6 +53,21 @@ mouse_clicked() {
 case "$SENDER" in
   "mouse.clicked") mouse_clicked
   ;;
+  "mouse.entered")
+    sketchybar --set "$NAME" background.border_color=0x80c0efff \
+                             icon.highlight=true
+  ;;
+  "mouse.exited")
+    source "$CONFIG_DIR/colors.sh"
+    FOCUSED=$(aerospace list-workspaces --focused)
+    if [ "space.$FOCUSED" = "$NAME" ]; then
+      sketchybar --set "$NAME" background.border_color=$GREY \
+                               icon.highlight=true
+    else
+      sketchybar --set "$NAME" background.border_color=$BACKGROUND_2 \
+                               icon.highlight=false
+    fi
+  ;;
   *) update
   ;;
 esac
