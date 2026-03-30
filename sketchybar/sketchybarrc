@@ -76,7 +76,7 @@ sketchybar --default "${defaults[@]}"
 source "$ITEM_DIR/apple.sh"
 source "$ITEM_DIR/menu_trigger.sh"
 source "$ITEM_DIR/spaces.sh"
-#source "$ITEM_DIR/front_app.sh"  # Now integrated into spaces.sh
+source "$ITEM_DIR/front_app.sh"
 #source "$ITEM_DIR/yabai.sh"
 source "$ITEM_DIR/timer.sh"
 # Center

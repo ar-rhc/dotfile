@@ -199,6 +199,8 @@ alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
 alt-shift-e = ['move-node-to-workspace E', 'workspace E']
 alt-shift-d = ['move-node-to-workspace D', 'workspace D']
 alt-shift-c = ['move-node-to-workspace C', 'workspace C']
+alt-shift-z = ['move-node-to-workspace Z', 'workspace Z']
+alt-shift-x = ['move-node-to-workspace X', 'workspace X']
 alt-shift-m = ['move-node-to-workspace M', 'workspace M']
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
@@ -300,6 +302,16 @@ q = [
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
     'mode main'
 ]
+t = [
+    'exec-and-forget open -a iTerm',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
+f = [
+    'exec-and-forget open -a Finder',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
 
 alt-ctrl-shift-backtick = [
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
@@ -334,6 +346,13 @@ f = ['layout floating tiling'] # Toggle between floating and tiling layout
 d = ['exec-and-forget /bin/bash $HOME/dotfiles/aerospace/scripts/toggle-floating-default.sh'] # Toggle default float/tile for focused app
 alt-ctrl-shift-f = ['fullscreen'] # Toggle fullscreen
 c = ['exec-and-forget /bin/bash -c "$HOME/.config/sketchybar/plugins/scripts/close_empty_windows.sh"'] # Close empty windows
+t = ['layout tiles accordion'] # Toggle tiles/accordion
+e = ['balance-sizes'] # Equalize window sizes
+s = ['layout h_tiles v_tiles'] # Toggle split direction
+w = ['close'] # Close focused window
+g = ['exec-and-forget /bin/bash $HOME/dotfiles/aerospace/scripts/toggle-gaps.sh'] # Toggle gaps
+equal = ['resize smart +50'] # Resize bigger
+minus = ['resize smart -50'] # Resize smaller
 
 left = ['join-with left']
 down = ['join-with down']
@@ -352,19 +371,14 @@ alt-ctrl-shift-esc = [
 # Disable unbound keys in service mode
 a = []
 b = []
-e = []
-g = []
 i = []
 m = []
 n = []
 o = []
 p = []
 q = []
-s = []
-t = []
 u = []
 v = []
-w = []
 x = []
 y = []
 z = []
@@ -382,8 +396,6 @@ space = []
 tab = []
 enter = []
 backspace = []
-minus = []
-equal = []
 period = []
 comma = []
 slash = []
@@ -481,7 +493,7 @@ run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar
 
 [[on-window-detected]]
 if.app-id = 'com.adobe.LightroomClassicCC7'
-run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace W', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
 [[on-window-detected]]
@@ -501,6 +513,10 @@ run = ['layout floating']
 if.app-id = 'com.brave.Browser'
 run = ['move-node-to-workspace S', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.edgemac'
+run = ['move-node-to-workspace 2', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.edgemac'
@@ -531,4 +547,16 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.ActivityMonitor'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Preview'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.AppStore'
 run = ['layout floating']

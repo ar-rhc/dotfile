@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
 case "$SENDER" in
 "mouse.entered")
   sketchybar --set timer popup.drawing=on
@@ -7,7 +9,7 @@ case "$SENDER" in
 "mouse.exited" | "mouse.exited.global")
   sketchybar --set timer popup.drawing=off
   ;;
-"reset_timer")
-  python3 "$PLUGIN_DIR/pomodoro.py" reset
+*)
+  python3 "$PLUGIN_DIR/pomodoro.py" tick
   ;;
 esac

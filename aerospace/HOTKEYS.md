@@ -56,11 +56,9 @@
 ### Move Window to Workspace + Follow
 | Hotkey | Workspace |
 |--------|-----------|
-| `alt-shift-1/q/a` | 1 / Q / A |
-| `alt-shift-2/w/s` | 2 / W / S |
+| `alt-shift-1/q/a/z` | 1 / Q / A / Z |
+| `alt-shift-2/w/s/x` | 2 / W / S / X |
 | `alt-shift-3/e/d/c/m` | 3 / E / D / C / M |
-
-> **Missing:** `alt-shift-z` and `alt-shift-x` (can't move windows to Z or X)
 
 ### Workspace Cycling
 | Hotkey | Action |
@@ -83,9 +81,16 @@ Cheat sheet shows on the left bar. Keys stay in service mode until `esc`.
 | Key | Action |
 |-----|--------|
 | `esc` | Exit + reload config + reload SketchyBar |
-| `r` | Flatten workspace tree (reset layout) |
 | `f` | Toggle floating/tiling (current window) |
 | `d` | Toggle default float/tile for focused app (modifies aerospace.toml) |
+| `t` | Toggle tiles/accordion layout |
+| `e` | Equalize (balance) window sizes |
+| `m` | Move window to next monitor (cycle) |
+| `s` | Toggle split direction (h/v) |
+| `w` | Close focused window |
+| `+`/`-` | Resize smart ±50 |
+| `g` | Toggle gaps (0 ↔ normal) |
+| `r` | Flatten workspace tree (reset layout) |
 | `c` | Close empty windows |
 | `caps-f` | Toggle fullscreen |
 | `h/j/k/l` | Join with left/down/up/right |
@@ -108,35 +113,6 @@ Quick-launch apps. Auto-exits after selection.
 | `b` | BetterTouchTool |
 | `e` | Microsoft Edge |
 | `q` | Weather |
+| `t` | iTerm2 |
+| `f` | Finder |
 | `caps-backtick` | Exit app mode (toggle) |
-
----
-
-## Suggestions for New Hotkeys
-
-### Service Mode
-| Key | Suggested Action | Reason |
-|-----|-----------------|--------|
-| `t` | Toggle accordion/tiles | Quick layout switch |
-| `e` | `balance-sizes` | Equalize windows after manual resize |
-| `m` | Move window to next monitor (cycle) | No current way to send to another monitor |
-| `+`/`-` | Resize ±50 | Resize without leaving service mode |
-| `s` | Toggle split direction | Change horizontal/vertical split |
-| `w` | Close focused window | Quick close |
-| `g` | Toggle gaps (0 ↔ normal) | Distraction-free mode |
-
-### Main Mode
-| Hotkey | Suggested Action | Reason |
-|--------|-----------------|--------|
-| `caps-tab` | `workspace-back-and-forth` | Quick toggle last 2 workspaces (currently commented out) |
-| `alt-shift-z` | Move window to Z + follow | Missing from move bindings |
-| `alt-shift-x` | Move window to X + follow | Missing from move bindings |
-| `caps-n` | Move workspace to next monitor | Rearrange workspace placement |
-
-### App Mode
-| Key | Suggested Action | Reason |
-|-----|-----------------|--------|
-| `t` | Terminal/iTerm2 | Quick terminal access |
-| `f` | Finder | Quick Finder window |
-| `c` | Cursor/VS Code | Quick editor access |
-| `s` | System Settings | Quick settings |

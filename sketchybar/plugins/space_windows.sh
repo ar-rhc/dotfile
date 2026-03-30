@@ -20,8 +20,13 @@ refresh_space_displays() {
     for w in $(aerospace list-workspaces --monitor "$m" --empty no 2>/dev/null); do
       sketchybar --set space."$w" display="$sketchy_display" 2>/dev/null || true
     done
+    FOCUSED=$(aerospace list-workspaces --focused 2>/dev/null)
     for w in $(aerospace list-workspaces --monitor "$m" --empty 2>/dev/null); do
-      sketchybar --set space."$w" display=0 2>/dev/null || true
+      if [ "$w" = "$FOCUSED" ]; then
+        sketchybar --set space."$w" display="$sketchy_display" 2>/dev/null || true
+      else
+        sketchybar --set space."$w" display=0 2>/dev/null || true
+      fi
     done
   done
 }
