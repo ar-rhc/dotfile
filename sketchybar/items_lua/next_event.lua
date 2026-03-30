@@ -9,6 +9,9 @@ local next_event = sbar.add("item", "next_event", {
   click_script = "/Users/alex/.config/sketchybar/plugins/scripts/next_event_click.sh",
 })
 
-next_event:subscribe({ "routine", "forced", "system_woke" }, function(env)
-  sbar.exec("NAME=next_event CONFIG_DIR=/Users/alex/.config/sketchybar /Users/alex/.config/sketchybar/plugins/next_event.sh")
-end)
+local function update_event()
+  sbar.exec("NAME=next_event CONFIG_DIR=/Users/alex/.config/sketchybar SENDER=routine /Users/alex/.config/sketchybar/plugins/next_event.sh")
+end
+
+next_event:subscribe({ "routine", "forced", "system_woke" }, function() update_event() end)
+update_event()
