@@ -7,7 +7,7 @@ sketchybar --set input_source \
     script="$PLUGIN_DIR/get_input_source.sh" \
     icon.color=0xffffffff \
     padding_left=5 \
-    padding_right=0 \
+    padding_right=5 \
     update_freq=1 \
     click_script='
         #!/bin/bash

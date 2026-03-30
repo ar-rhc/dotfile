@@ -3,8 +3,8 @@
 next_event=(
   icon="􀧞"
   #label.font="$FONT:Semibold:11.0"
-  padding_left=10
-  padding_right=10
+  padding_left=5
+  padding_right=5
   display="active"
   update_freq=60
   script="$PLUGIN_DIR/next_event.sh"

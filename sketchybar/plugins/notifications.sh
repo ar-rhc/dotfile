@@ -78,9 +78,9 @@ if [ -n "$MAIL_BADGE" ] && [ "$MAIL_BADGE" != "0" ] && [ "$MAIL_BADGE" != "missi
         padding_right=6 \
         click_script="open -a 'Mail'"
     # Set drawing separately (workaround for sketchybar quirk)
-    sketchybar --set notif.mail drawing=on
+    sketchybar --set notif.mail drawing=on width=-1
 else
-    sketchybar --set notif.mail drawing=off
+    sketchybar --set notif.mail drawing=off width=0
 fi
 
 # Check Messages app
@@ -105,9 +105,9 @@ if [ -n "$MESSAGES_BADGE" ] && [ "$MESSAGES_BADGE" != "0" ] && [ "$MESSAGES_BADG
         padding_right=6 \
         click_script="open -a 'Messages'"
     # Set drawing separately (workaround for sketchybar bug)
-    sketchybar --set notif.messages drawing=on
+    sketchybar --set notif.messages drawing=on width=-1
 else
-    sketchybar --set notif.messages drawing=off
+    sketchybar --set notif.messages drawing=off width=0
 fi
 
 # Check WhatsApp app
@@ -132,9 +132,9 @@ if [ -n "$WHATSAPP_BADGE" ] && [ "$WHATSAPP_BADGE" != "0" ] && [ "$WHATSAPP_BADG
         padding_right=6 \
         click_script="open -a 'WhatsApp'"
     # Set drawing separately (workaround for sketchybar bug)
-    sketchybar --set notif.whatsapp drawing=on
+    sketchybar --set notif.whatsapp drawing=on width=-1
 else
-    sketchybar --set notif.whatsapp drawing=off
+    sketchybar --set notif.whatsapp drawing=off width=0
 fi
 
 # Check WeChat app
@@ -159,7 +159,7 @@ if [ -n "$WECHAT_BADGE" ] && [ "$WECHAT_BADGE" != "0" ] && [ "$WECHAT_BADGE" != 
         padding_right=6 \
         click_script="open -a 'WeChat'"
     # Set drawing separately (workaround for sketchybar bug)
-    sketchybar --set notif.wechat drawing=on
+    sketchybar --set notif.wechat drawing=on width=-1
 else
-    sketchybar --set notif.wechat drawing=off
+    sketchybar --set notif.wechat drawing=off width=0
 fi

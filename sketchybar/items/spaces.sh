@@ -117,8 +117,8 @@ done
 space_creator=(
   icon=􀆊
   icon.font="$FONT:Heavy:16.0"
-  padding_left=10
-  padding_right=8
+  padding_left=5
+  padding_right=5
   label.drawing=off
   display=active
   #click_script='yabai -m space --create'

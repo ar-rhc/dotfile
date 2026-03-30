@@ -5,7 +5,7 @@ sketchybar --add item weather right \
   icon=󰖐 \
   icon.font="Hack Nerd Font:Regular:13.0" \
   script="$PLUGIN_DIR/weather.sh" \
-  padding_left=20 \
+  padding_left=5 \
   update_freq=1800 \
   click_script="$PLUGIN_DIR/scripts/weather_click.sh" \
   --subscribe weather mouse.clicked

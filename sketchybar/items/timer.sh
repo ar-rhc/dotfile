@@ -11,7 +11,7 @@ sketchybar --add event reset_timer
   click_script="sketchybar --trigger reset_timer"
   popup.background.border_width=0
   popup.height=35
-  padding_left=10
+  padding_left=5
  )
 
  # Stopwatch mode
