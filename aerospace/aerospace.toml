@@ -323,86 +323,71 @@ alt-ctrl-shift-backtick = [
 
 [mode.service.binding]
 esc = [
+    'mode main',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
     'reload-config',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
+    'exec-and-forget /opt/homebrew/bin/sketchybar --reload'
 ]
-r = [
-    'flatten-workspace-tree',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --reload',
-    'mode main'
-] # reset layout
-#s = ['layout sticky tiling', 'mode main'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
-f = [
-    'layout floating tiling',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main',
-] # Toggle between floating and tiling layout
+r = ['flatten-workspace-tree'] # reset layout
+#s = ['layout sticky tiling'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
+f = ['layout floating tiling'] # Toggle between floating and tiling layout
+d = ['exec-and-forget /bin/bash $HOME/dotfiles/aerospace/scripts/toggle-floating-default.sh'] # Toggle default float/tile for focused app
+alt-ctrl-shift-f = ['fullscreen'] # Toggle fullscreen
+c = ['exec-and-forget /bin/bash -c "$HOME/.config/sketchybar/plugins/scripts/close_empty_windows.sh"'] # Close empty windows
 
-alt-ctrl-shift-f = [
-    'fullscreen',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main',
-] # Toggle between floating and tiling layout
-# backspace = [
-#     'close-all-windows-but-current',
-#     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-#     'mode main'
-# ]
-
-c = [
-    'exec-and-forget /bin/bash -c "$HOME/.config/sketchybar/plugins/scripts/close_empty_windows.sh"',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
-
-
-left = [
-    'join-with left',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
-down = [
-    'join-with down',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
-up = [
-    'join-with up',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
-right = [
-    'join-with right',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
-h = [
-    'join-with left',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
-j = [
-    'join-with down',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
-k = [
-    'join-with up',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
-l = [
-    'join-with right',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
-    'mode main'
-]
+left = ['join-with left']
+down = ['join-with down']
+up = ['join-with up']
+right = ['join-with right']
+h = ['join-with left']
+j = ['join-with down']
+k = ['join-with up']
+l = ['join-with right']
 
 alt-ctrl-shift-esc = [
     'mode main',
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit'
 ]
+
+# Disable unbound keys in service mode
+a = []
+b = []
+e = []
+g = []
+i = []
+m = []
+n = []
+o = []
+p = []
+q = []
+s = []
+t = []
+u = []
+v = []
+w = []
+x = []
+y = []
+z = []
+0 = []
+1 = []
+2 = []
+3 = []
+4 = []
+5 = []
+6 = []
+7 = []
+8 = []
+9 = []
+space = []
+tab = []
+enter = []
+backspace = []
+minus = []
+equal = []
+period = []
+comma = []
+slash = []
+semicolon = []
 
 
 
@@ -534,4 +519,16 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Terminal'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'org.pqrs.Karabiner-Elements.Settings'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.ActivityMonitor'
 run = ['layout floating']

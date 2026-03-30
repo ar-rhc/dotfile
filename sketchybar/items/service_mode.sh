@@ -19,6 +19,17 @@ service_mode=(
   script="$PLUGIN_DIR/service_mode.sh"
 )
 
+service_mode_cheat=(
+  drawing=off
+  icon.drawing=off
+  label.font="$FONT:Regular:11.0"
+  label.color=$GREY
+  label.drawing=off
+  padding_left=10
+)
+
 sketchybar --add item service_mode center \
            --set service_mode "${service_mode[@]}" \
-           --subscribe service_mode aerospace_service_mode_enter aerospace_service_mode_exit aerospace_app_mode_enter aerospace_app_mode_exit
+           --subscribe service_mode aerospace_service_mode_enter aerospace_service_mode_exit aerospace_app_mode_enter aerospace_app_mode_exit \
+           --add item service_mode_cheat left \
+           --set service_mode_cheat "${service_mode_cheat[@]}"
