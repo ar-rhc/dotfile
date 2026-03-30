@@ -9,6 +9,8 @@ local volume = sbar.add("item", "volume_desktop", {
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
   },
   label = { drawing = false },
+  padding_left = 3,
+  padding_right = 3,
   update_freq = 5,
   updates = "on",
   click_script = "/Users/alex/.config/sketchybar/plugins/volume_desktop_click.sh",

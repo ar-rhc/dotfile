@@ -24,5 +24,5 @@ local notifications = sbar.add("item", "notifications", {
 })
 
 notifications:subscribe({ "routine", "forced", "system_woke" }, function(env)
-  sbar.exec("/bin/bash -c 'export CONFIG_DIR=/Users/alex/.config/sketchybar; /Users/alex/.config/sketchybar/plugins/notifications.sh'")
+  sbar.exec("NAME=notifications CONFIG_DIR=/Users/alex/.config/sketchybar /Users/alex/.config/sketchybar/plugins/notifications.sh")
 end)
