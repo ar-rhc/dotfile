@@ -69,7 +69,7 @@ local function update_display()
   if pomo.phase == "work" then prefix, icon, color = "W", icons.timer.work, colors.orange
   elseif pomo.phase == "short_break" then prefix, icon, color = "B", icons.timer.short_break, colors.green
   else prefix, icon, color = "LB", icons.timer.long_break, colors.blue end
-  local label = prefix .. " " .. format_time(pomo.remaining)
+  local label = prefix .. " " .. format_time(pomo.remaining) .. " 🍅" .. pomo.total
   if pomo.paused then label = label .. " ⏸" end
   timer:set({ icon = { string = icon, color = color }, label = { string = label, color = color } })
 end
@@ -140,18 +140,22 @@ timer:subscribe("mouse.clicked", function()
   update_display(); update_sessions()
 end)
 
+-- Shared popup item style
+local popup_label = { font = { family = settings.font.text, style = "Regular", size = 12.0 } }
+local popup_icon = { font = { family = settings.font.text, style = "Regular", size = 14.0 } }
+
 -- Popup items + custom events for popup click handling
 sbar.add("event", "pomo_skip")
 sbar.add("event", "pomo_reset")
 sbar.add("event", "pomo_stopwatch")
 
-sbar.add("item", "timer.pomo_toggle", { position = "popup.timer", icon = { string = "􀊄" }, label = { string = "Start/Pause" },
+sbar.add("item", "timer.pomo_toggle", { position = "popup.timer", icon = { string = "􀊄", font = popup_icon.font }, label = { string = "Start/Pause", font = popup_label.font },
   click_script = "sketchybar --set timer popup.drawing=off" })
-sbar.add("item", "timer.pomo_skip", { position = "popup.timer", icon = { string = "􀊐" }, label = { string = "Skip" },
+sbar.add("item", "timer.pomo_skip", { position = "popup.timer", icon = { string = "􀊐", font = popup_icon.font }, label = { string = "Skip", font = popup_label.font },
   click_script = "sketchybar --set timer popup.drawing=off; sketchybar --trigger pomo_skip" })
-sbar.add("item", "timer.pomo_reset", { position = "popup.timer", icon = { string = "􀛶" }, label = { string = "Reset" },
+sbar.add("item", "timer.pomo_reset", { position = "popup.timer", icon = { string = "􀛶", font = popup_icon.font }, label = { string = "Reset", font = popup_label.font },
   click_script = "sketchybar --set timer popup.drawing=off; sketchybar --trigger pomo_reset" })
-sbar.add("item", "timer.sessions", { position = "popup.timer", icon = { drawing = false }, label = { string = "🍅 Ready" } })
+sbar.add("item", "timer.sessions", { position = "popup.timer", icon = { drawing = false }, label = { string = "🍅 Ready", font = popup_label.font } })
 
 timer:subscribe("pomo_skip", function()
   if pomo.mode == "pomodoro" then transition_phase() end
@@ -164,11 +168,11 @@ timer:subscribe("pomo_reset", function()
 end)
 
 -- Timer presets via events
-local presets = { { "3min", 180 }, { "5min", 300 }, { "10min", 600 }, { "20min", 1200 }, { "1hr", 3600 } }
-local preset_labels = { "3 min", "5 min", "10 min", "20 min", "1 hour" }
+local presets = { { "3min", 180 }, { "5min", 300 }, { "egg", 390 }, { "10min", 600 }, { "20min", 1200 }, { "1hr", 3600 } }
+local preset_labels = { "3 min", "5 min", "6.5 min 🥚", "10 min", "20 min", "1 hour" }
 for i, p in ipairs(presets) do
   sbar.add("event", "timer_" .. p[1])
-  sbar.add("item", "timer.preset" .. i, { position = "popup.timer", label = { string = preset_labels[i] },
+  sbar.add("item", "timer.preset" .. i, { position = "popup.timer", label = { string = preset_labels[i], font = popup_label.font },
     click_script = "sketchybar --set timer popup.drawing=off; sketchybar --trigger timer_" .. p[1] })
   timer:subscribe("timer_" .. p[1], function()
     pomo.mode = "timer"; pomo.remaining = p[2]; pomo.paused = false
@@ -178,7 +182,7 @@ end
 
 -- Custom timer
 sbar.add("event", "timer_custom")
-sbar.add("item", "timer.custom", { position = "popup.timer", label = { string = "Custom…" },
+sbar.add("item", "timer.custom", { position = "popup.timer", label = { string = "Custom…", font = popup_label.font },
   click_script = [[sketchybar --set timer popup.drawing=off; mins=$(osascript -e 'text returned of (display dialog "Enter minutes:" default answer "15")' 2>/dev/null) && [ -n "$mins" ] && sketchybar --trigger timer_custom SECONDS=$(($mins * 60))]] })
 timer:subscribe("timer_custom", function(env)
   pomo.mode = "timer"; pomo.remaining = tonumber(env.SECONDS) or 900; pomo.paused = false
@@ -186,7 +190,7 @@ timer:subscribe("timer_custom", function(env)
 end)
 
 -- Stopwatch
-sbar.add("item", "timer.stopwatch", { position = "popup.timer", icon = { string = icons.timer.stopwatch }, label = { string = "Stopwatch" },
+sbar.add("item", "timer.stopwatch", { position = "popup.timer", icon = { string = icons.timer.stopwatch, font = popup_icon.font }, label = { string = "Stopwatch", font = popup_label.font },
   click_script = "sketchybar --set timer popup.drawing=off; sketchybar --trigger pomo_stopwatch" })
 timer:subscribe("pomo_stopwatch", function()
   pomo.mode = "stopwatch"; pomo.sw_start = os.time(); pomo.remaining = 0; pomo.paused = false

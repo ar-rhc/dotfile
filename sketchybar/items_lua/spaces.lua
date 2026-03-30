@@ -1,8 +1,9 @@
 local colors = require("colors")
 local settings = require("settings")
 
--- Register aerospace event
+-- Register events
 sbar.add("event", "aerospace_workspace_change")
+sbar.add("event", "window_moved")
 
 -- Get workspace info from AeroSpace at init time
 local function get_workspaces()
@@ -130,6 +131,77 @@ local space_creator = sbar.add("item", "space_creator", {
   display = "active",
 })
 
+-- Refresh icon strip for focused workspace (pure Lua)
+local last_icon_cache = {}
+
+local function reload_workspace_icons(ws_id)
+  if not ws_id or ws_id == "" then return end
+  sbar.exec("aerospace list-windows --workspace " .. ws_id .. " | awk -F'|' '{gsub(/^ *| *$/, \"\", $2); print $2}'", function(apps_str)
+    apps_str = apps_str:gsub("%s+$", "")
+    -- Cache check: skip update if unchanged
+    if last_icon_cache[ws_id] == apps_str then return end
+    last_icon_cache[ws_id] = apps_str
+
+    if apps_str == "" then
+      if spaces[ws_id] then
+        spaces[ws_id]:set({ label = { string = "" } })
+      end
+      return
+    end
+
+    -- Build icon strip
+    local icon_cmds = {}
+    for app in apps_str:gmatch("[^\n]+") do
+      if app ~= "" then table.insert(icon_cmds, app) end
+    end
+
+    if #icon_cmds == 0 then
+      if spaces[ws_id] then spaces[ws_id]:set({ label = { string = "" } }) end
+      return
+    end
+
+    -- Build a single shell command to get all icons at once
+    local cmd = ""
+    for _, app in ipairs(icon_cmds) do
+      cmd = cmd .. "/Users/alex/.config/sketchybar/plugins/icon_map.sh '" .. app .. "'; "
+    end
+    sbar.exec(cmd, function(icons_str)
+      local strip = " "
+      for icon in icons_str:gmatch("[^\n]+") do
+        strip = strip .. " " .. icon:gsub("%s+$", "")
+      end
+      if spaces[ws_id] then
+        sbar.animate("sin", 10, function()
+          spaces[ws_id]:set({ label = { string = strip } })
+        end)
+      end
+    end)
+  end)
+end
+
+local function refresh_all_focused()
+  sbar.exec("aerospace list-workspaces --focused", function(focused)
+    focused = focused:gsub("%s+$", "")
+    reload_workspace_icons(focused)
+  end)
+end
+
+-- Space creator handles workspace changes + display updates
 space_creator:subscribe({ "aerospace_workspace_change", "display_change" }, function(env)
   sbar.exec("/bin/bash -c 'export CONFIG_DIR=/Users/alex/.config/sketchybar; export SENDER=" .. (env.SENDER or "routine") .. "; /Users/alex/.config/sketchybar/plugins/space_windows.sh'")
+end)
+
+-- Window open/close detection (kernel event, zero CPU)
+space_creator:subscribe("space_windows_change", function()
+  refresh_all_focused()
+end)
+
+-- App focus change also refreshes (catches most open/close scenarios)
+space_creator:subscribe("front_app_switched", function()
+  refresh_all_focused()
+end)
+
+-- Window moved between workspaces (from on-window-detected rules)
+space_creator:subscribe("window_moved", function()
+  refresh_all_focused()
 end)
