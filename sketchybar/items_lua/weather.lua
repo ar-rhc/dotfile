@@ -12,6 +12,13 @@ local weather = sbar.add("item", "weather", {
   click_script = "/Users/alex/.config/sketchybar/plugins/scripts/weather_click.sh",
 })
 
-weather:subscribe({ "routine", "forced" }, function(env)
+local function update_weather()
   sbar.exec("NAME=weather CONFIG_DIR=/Users/alex/.config/sketchybar /Users/alex/.config/sketchybar/plugins/weather.sh")
+end
+
+weather:subscribe({ "routine", "forced" }, function(env)
+  update_weather()
 end)
+
+-- Force initial update
+update_weather()
