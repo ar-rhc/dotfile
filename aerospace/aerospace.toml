@@ -16,14 +16,18 @@ after-startup-command = [
     # JankyBorders has a built-in detection of already running process,
     # so it won't be run twice on AeroSpace restart
     'exec-and-forget /opt/homebrew/bin/sketchybar',
-    'exec-and-forget /opt/homebrew/opt/borders/bin/borders active_color="glow(0xd943ff64)" inactive_color=0x20494d64 width=8.0'
+    'exec-and-forget /bin/bash ~/.config/borders/bordersrc'
 ]
 
 exec-on-workspace-change = [
+    # Then trigger sketchybar update
     '/bin/bash',
     '-c',
     '/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change AEROSPACE_FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE AEROSPACE_PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE',
 ]
+
+
+
 
 # Start AeroSpace at login
 start-at-login = true
@@ -35,7 +39,7 @@ enable-normalization-opposite-orientation-for-nested-containers = false
 # See: https://nikitabobko.github.io/AeroSpace/guide#layouts
 # The 'accordion-padding' specifies the size of accordion padding
 # You can set 0 to disable the padding feature
-accordion-padding = 20
+accordion-padding = 50
 
 # Possible values: tiles|accordion
 default-root-container-layout = 'tiles'
@@ -51,6 +55,8 @@ key-mapping.preset = 'qwerty'
 
 ## on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 ## on-focus-changed = ['move-mouse window-lazy-center']
+## Note: on-focus-changed only accepts aerospace commands, not shell scripts
+## Using periodic refresh in sketchybar instead (update_freq=2 in spaces.sh)
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
@@ -82,13 +88,14 @@ M = 3
 [gaps]
 inner.horizontal = 5
 inner.vertical = 5
-# Top gap for battery indicator - all monitors get 40px
-outer.top = [{ monitor."main" = 45 }, 45]
+# Top gap for battery indicator - all monitors get 45px
+outer.top = [{ monitor."1" = 45 }, { monitor."2" = 45 }, { monitor."3" = 45 }, 45]
 outer.left = 5
 outer.bottom = 5
 outer.right = 5
 
 # See https://nikitabobko.github.io/AeroSpace/guide#exec-env-vars
+
 [exec] # Again, you don't need to copy all config sections to your config.
 inherit-env-vars = true # If you don't touch "exec" section,
 
@@ -120,30 +127,44 @@ PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 
 ########## Layout Commands ##########
-alt-slash = 'layout tiles horizontal vertical'
-alt-comma = 'layout accordion horizontal vertical'
-alt-ctrl-slash = 'layout tiles horizontal vertical'
+alt-ctrl-shift-slash = 'layout tiles horizontal vertical'
+alt-ctrl-shift-comma = 'layout accordion horizontal vertical'
 alt-ctrl-shift-f = ['layout floating tiling']
-alt-ctrl-shift-v = 'fullscreen'
+## alt-ctrl-shift-v = ## Using BTT to center window
+
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
+
 alt-keypad4 = 'focus left --boundaries all-monitors-outer-frame'
 alt-keypad2 = 'focus down --boundaries all-monitors-outer-frame'
 alt-keypad8 = 'focus up --boundaries all-monitors-outer-frame'
 alt-keypad6 = 'focus right --boundaries all-monitors-outer-frame'
 
+alt-shift-h = 'focus left --boundaries all-monitors-outer-frame'
+alt-shift-j = 'focus down --boundaries all-monitors-outer-frame'
+alt-shift-k = 'focus up --boundaries all-monitors-outer-frame'
+alt-shift-l = 'focus right --boundaries all-monitors-outer-frame'
+
+# Focus next/previous window in accordion layout (DFS traversal)
+# These work great for cycling through stacked windows in accordion mode
+# dfs-next/prev: Depth-first traversal (wraps around automatically)
+alt-shift-ctrl-tab = 'focus dfs-next --boundaries workspace'
+cmd-alt-shift-ctrl-tab = 'focus dfs-prev'
+
+
+
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move
 # Move window position
-alt-shift-h = 'move left'
-alt-shift-j = 'move down'
-alt-shift-k = 'move up'
-alt-shift-l = 'move right'
+alt-ctrl-shift-h = 'move left'
+alt-ctrl-shift-j = 'move down'
+alt-ctrl-shift-k = 'move up'
+alt-ctrl-shift-l = 'move right'
 
-alt-shift-keypad4 = 'move left'
-alt-shift-keypad2 = 'move down'
-alt-shift-keypad6 = 'move right'
-alt-shift-keypad8 = 'move up'
+alt-ctrl-shift-keypad4 = 'move left'
+alt-ctrl-shift-keypad2 = 'move down'
+alt-ctrl-shift-keypad6 = 'move right'
+alt-ctrl-shift-keypad8 = 'move up'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
@@ -151,6 +172,12 @@ alt-ctrl-shift-keypadMinus = 'resize smart -50'
 alt-ctrl-shift-keypadPlus = 'resize smart +50'
 alt-ctrl-shift-leftSquareBracket = 'resize smart -50'
 alt-ctrl-shift-rightSquareBracket = 'resize smart +50'
+
+# --- Others ---
+# Display brightness control (BetterDisplay)
+alt-keypadPlus = 'exec-and-forget /bin/bash -c "/opt/homebrew/bin/BetterDisplaycli set -name=\"HP E24u G4\" -brightness=1 && /opt/homebrew/bin/BetterDisplaycli set -name=\"S24C31x\" -brightness=1"'
+alt-keypadMinus = 'exec-and-forget /bin/bash -c "/opt/homebrew/bin/BetterDisplaycli set -name=\"HP E24u G4\" -brightness=0 && /opt/homebrew/bin/BetterDisplaycli set -name=\"S24C31x\" -brightness=0"'
+alt-keypad0 = 'exec-and-forget /bin/bash -c "/opt/homebrew/bin/BetterDisplaycli set -name=\"HP E24u G4\" -brightness=0 && /opt/homebrew/bin/BetterDisplaycli set -name=\"S24C31x\" -brightness=0"'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
 ##### Keypad bindings commented out
@@ -200,9 +227,17 @@ alt-ctrl-shift-m = 'workspace M'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
-alt-ctrl-shift-tab = 'workspace-back-and-forth'
+#alt-ctrl-shift-tab = 'workspace-back-and-forth'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 # cmd-alt-ctrl-shift-tab = 'move-workspace-to-monitor --wrap-around right'
+
+# Custom workspace cycling based on monitor (vertical column order)
+# Monitor 1: 1, Q, A, Z | Monitor 2: 2, W, S, X | Monitor 3: 3, E, D, C, M
+# Cycle workspaces (script path uses $HOME/dotfiles so it works when ~/.config/aerospace points at unmounted NVme)
+alt-ctrl-p = 'exec-and-forget /bin/bash -c "$HOME/dotfiles/aerospace/scripts/cycle-workspace.sh"'
+alt-ctrl-o = 'exec-and-forget /bin/bash -c "$HOME/dotfiles/aerospace/scripts/cycle-workspace-prev.sh"'
+
+
 
 
 #########          Mode Triggering Commands           ########
@@ -260,6 +295,11 @@ e = [
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
     'mode main'
 ]
+q = [
+    'exec-and-forget open /System/Applications/Weather.app',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
 
 alt-ctrl-shift-backtick = [
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
@@ -290,6 +330,7 @@ esc = [
 r = [
     'flatten-workspace-tree',
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --reload',
     'mode main'
 ] # reset layout
 #s = ['layout sticky tiling', 'mode main'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
@@ -377,6 +418,7 @@ alt-ctrl-shift-esc = [
 #                              #
 ################################
 # Automatically close ghost windows (windows with empty titles)
+
 # [[on-window-detected]]
 # if.window-title-regex-substring = '^$'
 # run = ['close']
@@ -385,20 +427,29 @@ alt-ctrl-shift-esc = [
 
 [[on-window-detected]]
 if.app-id = 'com.kakao.KakaoTalkMac'
-run = ['move-node-to-workspace 8']
+run = ['move-node-to-workspace 8', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tdesktop.Telegram'
-run = ['move-node-to-workspace A']
+run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+
+[[on-window-detected]]
+if.app-id = 'com.tdesktop.Telegram'
+if.window-title-regex-substring = 'Media viewer'
+run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.hnc.Discord'
-run = ['move-node-to-workspace A']
+run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
 # [[on-window-detected]]
 # if.app-id = "md.obsidian"
 # run = ['move-node-to-workspace 9']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.weather'
@@ -414,12 +465,16 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Music'
-run = ['move-node-to-workspace M']
+run = ['move-node-to-workspace M', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
 if.window-title-regex-substring = 'Weixin'
-run = ['move-node-to-workspace Q']
+run = ['move-node-to-workspace Q', 'move down', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
+run = ['move-node-to-workspace Q', 'move down', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
@@ -428,21 +483,55 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
-if.window-title-regex-substring = 'WeChat (Window)'
+if.window-title-regex-substring = '^WeChat \(Window\)$'
 run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'br.paker.Calendr'
+run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.mail'
+run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+
+[[on-window-detected]]
+if.app-id = 'com.adobe.LightroomClassicCC7'
+run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+
 
 [[on-window-detected]]
 if.app-id = 'com.apple.findmy'
 if.window-title-regex-substring = 'Find My'
-run = ['move-node-to-workspace A']
-
+run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
-if.app-id = 'com.apple.MobileSMS'
-run = ['move-node-to-workspace Q']
+if.app-id = 'com.apple.iCal'
+run = ['move-node-to-workspace C', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+
+[[on-window-detected]]
+if.window-title-regex-substring = 'Bitwarden'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.brave.Browser'
+run = ['move-node-to-workspace S', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.edgemac'
 if.window-title-regex-substring = 'Bitwarden - Personal'
 run = ['layout floating']
 
+
+[[on-window-detected]]
+if.app-id = 'com.runningwithcrayons.Alfred-Preferences'
+run = ['layout floating']
+
+
+[[on-window-detected]]
+if.app-id = 'com.objective-see.lulu.app'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Terminal'
+run = ['layout floating']
