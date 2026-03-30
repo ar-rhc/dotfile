@@ -54,8 +54,8 @@ defaults=(
   label.shadow.drawing=on
   label.shadow.distance=2
   label.shadow.color=0xff000000
-  padding_right=$PADDINGS
-  padding_left=$PADDINGS
+  padding_right=5
+  padding_left=5
   background.height=26
   background.corner_radius=9
   background.border_width=2
@@ -74,6 +74,7 @@ sketchybar --default "${defaults[@]}"
 
 # Left
 source "$ITEM_DIR/apple.sh"
+source "$ITEM_DIR/menu_trigger.sh"
 source "$ITEM_DIR/spaces.sh"
 #source "$ITEM_DIR/front_app.sh"  # Now integrated into spaces.sh
 #source "$ITEM_DIR/yabai.sh"
