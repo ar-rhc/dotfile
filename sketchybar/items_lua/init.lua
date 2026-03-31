@@ -18,6 +18,7 @@ require("items_lua.focus")
 require("items_lua.next_event")
 require("items_lua.wifi")
 require("items_lua.ram")
-require("items_lua.cpu")
+-- require("items_lua.cpu")  -- disabled for now
 require("items_lua.weather")
 require("items_lua.music")
+require("items_lua.brackets")
