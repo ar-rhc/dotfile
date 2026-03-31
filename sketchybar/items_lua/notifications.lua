@@ -3,22 +3,22 @@ local settings = require("settings")
 local icon_map = require("icon_map")
 
 local apps = {
-  { name = "mail",     bundle = "com.apple.mail",        app = "Mail",     display = "Mail" },
-  { name = "messages", bundle = "com.apple.MobileSMS",   app = "Messages", display = "Messages" },
-  { name = "whatsapp", bundle = "net.whatsapp.WhatsApp", app = "WhatsApp", display = "WhatsApp" },
-  { name = "wechat",   bundle = "com.tencent.xinWeChat", app = "WeChat",   display = "WeChat" },
+  { name = "mail",     bundle = "com.apple.mail",        display = "Mail" },
+  { name = "messages", bundle = "com.apple.MobileSMS",   display = "Messages" },
+  { name = "whatsapp", bundle = "net.whatsapp.WhatsApp", display = "WhatsApp" },
+  { name = "wechat",   bundle = "com.tencent.xinWeChat", display = "WeChat" },
 }
 
 -- Create notification items
-local notif_items = {}
 for _, a in ipairs(apps) do
-  local item = sbar.add("item", "notif." .. a.name, {
+  sbar.add("item", "notif." .. a.name, {
     position = "right",
     drawing = false,
     width = 0,
     padding_left = 0,
     padding_right = 0,
     icon = {
+      string = icon_map.get(a.display),
       font = { family = "sketchybar-app-font", style = "Regular", size = 16.0 },
       color = colors.white,
       padding_left = 10,
@@ -36,7 +36,6 @@ for _, a in ipairs(apps) do
     },
     click_script = "open -a '" .. a.display .. "'",
   })
-  notif_items[a.name] = { item = item, app = a }
 end
 
 -- Hidden trigger item
@@ -52,37 +51,25 @@ local trigger = sbar.add("item", "notifications", {
   background = { drawing = false },
 })
 
--- Check badges using lsappinfo
-local function check_badge(bundle_id, callback)
-  sbar.exec("lsappinfo info -only StatusLabel '" .. bundle_id .. "' 2>/dev/null | grep -o '\"label\"=\"[^\"]*\"' | cut -d'\"' -f4", function(badge)
-    badge = badge:gsub("%s+$", ""):gsub("^%s+", "")
-    if badge == "" or badge == " " then
-      callback(nil)
-    else
-      callback(badge)
-    end
-  end)
+-- Build a single shell command that checks all badges and sets items directly
+-- This bypasses sbar.exec callback issues with empty/slow output
+local function build_check_cmd()
+  local cmd = ""
+  for _, a in ipairs(apps) do
+    local icon = icon_map.get(a.display)
+    cmd = cmd .. string.format(
+      [[badge=$(lsappinfo info -only StatusLabel '%s' 2>/dev/null | grep -o '"label"="[^"]*"' | cut -d'"' -f4); ]] ..
+      [[if [ -n "$badge" ] && [ "$badge" != " " ]; then ]] ..
+      [[sketchybar --set notif.%s drawing=on width=-1 label="$badge" icon='%s' icon.font="sketchybar-app-font:Regular:16.0"; ]] ..
+      [[else sketchybar --set notif.%s drawing=off width=0; fi; ]],
+      a.bundle, a.name, icon, a.name
+    )
+  end
+  return cmd
 end
 
-local function update_notif(name, badge)
-  local ni = notif_items[name]
-  if not ni then return end
-  if badge then
-    ni.item:set({
-      icon = { string = icon_map.get(ni.app.display) },
-      label = { string = badge },
-      drawing = true,
-      width = "dynamic",
-    })
-  else
-    ni.item:set({ drawing = false, width = 0 })
-  end
-end
+local check_cmd = build_check_cmd()
 
 trigger:subscribe({ "routine", "forced", "system_woke" }, function()
-  for _, a in ipairs(apps) do
-    check_badge(a.bundle, function(badge)
-      update_notif(a.name, badge)
-    end)
-  end
+  sbar.exec(check_cmd .. " &")
 end)
