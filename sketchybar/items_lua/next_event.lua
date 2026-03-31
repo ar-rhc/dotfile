@@ -132,7 +132,8 @@ local function update_event()
             elseif start_sec > now then
               local event_date = os.date("%Y-%m-%d", start_sec)
               local hours_until = (start_sec - now) / 3600
-              if event_date == today or hours_until <= 10 then
+              -- Show all future events when skipping, otherwise limit to today or 10hr
+              if skip_count > 0 or event_date == today or hours_until <= 10 then
                 event_type = "next"
               end
             end
