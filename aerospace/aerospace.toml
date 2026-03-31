@@ -440,9 +440,9 @@ if.app-id = 'com.hnc.Discord'
 run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
-# [[on-window-detected]]
-# if.app-id = "md.obsidian"
-# run = ['move-node-to-workspace 9']
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = ['move-node-to-workspace 1', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.finder'
@@ -539,10 +539,6 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'org.pqrs.Karabiner-Elements.Settings'
-run = ['layout floating']
-
-[[on-window-detected]]
-if.app-id = 'md.obsidian'
 run = ['layout floating']
 
 [[on-window-detected]]
