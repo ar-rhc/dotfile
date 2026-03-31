@@ -95,7 +95,7 @@ end
 
 -- Items to hide in modes
 local HIDE_ITEMS = {
-  "menu_trigger", "space_creator", "timer", "volume_desktop",
+  "menu_trigger", "space_creator", "app_list", "timer", "volume_desktop",
   "volume_desktop_slider", "notifications", "input_source", "trash",
   "next_event", "wifi", "ram", "cpu.percent", "cpu.top", "weather", "music", "focus",
 }

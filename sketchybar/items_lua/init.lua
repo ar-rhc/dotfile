@@ -3,6 +3,7 @@ require("items_lua.apple")
 require("items_lua.menu_trigger")
 require("items_lua.spaces")
 require("items_lua.front_app")
+require("items_lua.app_list")
 require("items_lua.timer")
 
 -- Center
