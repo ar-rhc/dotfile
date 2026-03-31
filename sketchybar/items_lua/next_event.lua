@@ -171,7 +171,7 @@ next_event:subscribe("mouse.clicked", function(env)
   end
 
   -- Fetch all today's events for popup
-  local cmd = 'icalBuddy -n -nc -ec "' .. EXCLUDE_CALENDARS .. '" -iep "datetime,title" -po "datetime,title" -ps "|^|" -tf "%H:%M" -df "%Y-%m-%d" -nrd -b "" -ea eventsToday 2>/dev/null'
+  local cmd = 'icalBuddy -n -nc -ec "' .. EXCLUDE_CALENDARS .. '" -iep "datetime,title" -po "datetime,title" -ps "|^|" -tf "%H:%M" -df "%Y-%m-%d" -nrd -b "" -ea eventsToday+1 2>/dev/null'
 
   sbar.exec(cmd, function(result)
     result = result:gsub("%s+$", "")
@@ -192,6 +192,8 @@ next_event:subscribe("mouse.clicked", function(env)
     end
 
     local now = os.time()
+    local today = os.date("%Y-%m-%d")
+    local last_date = ""
     local i = 1
     for line in result:gmatch("[^\n]+") do
       if i > MAX_POPUP_EVENTS then break end
@@ -202,6 +204,20 @@ next_event:subscribe("mouse.clicked", function(env)
         local date_str = datetime:match("^(%d%d%d%d%-%d%d%-%d%d)")
 
         if start_time and date_str then
+          -- Insert day header when date changes
+          if date_str ~= last_date and i <= MAX_POPUP_EVENTS then
+            local day_label = date_str == today and "Today" or "Tomorrow"
+            event_items[i]:set({
+              drawing = true,
+              icon = { string = "—", color = colors.grey },
+              label = { string = day_label, color = colors.orange,
+                font = { family = settings.font.text, style = "Bold", size = 12.0 } },
+            })
+            last_date = date_str
+            i = i + 1
+            if i > MAX_POPUP_EVENTS then break end
+          end
+
           local time_display = start_time
           if end_time then time_display = start_time .. "-" .. end_time end
 
@@ -223,7 +239,8 @@ next_event:subscribe("mouse.clicked", function(env)
           event_items[i]:set({
             drawing = true,
             icon = { string = time_display, color = time_color },
-            label = { string = title, color = label_color },
+            label = { string = title, color = label_color,
+              font = { family = settings.font.text, style = "Regular", size = 12.0 } },
           })
           i = i + 1
         end
