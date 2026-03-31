@@ -113,7 +113,6 @@ local weather = sbar.add("item", "weather", {
   padding_right = 3,
   update_freq = 1800,
   updates = "on",
-  click_script = "/Users/alex/.config/sketchybar/plugins/scripts/weather_click.sh",
 })
 
 local function update_weather()
@@ -152,4 +151,13 @@ local function update_weather()
 end
 
 weather:subscribe({ "routine", "forced" }, function() update_weather() end)
+
+weather:subscribe("mouse.clicked", function(env)
+  if env.BUTTON == "right" then
+    sbar.exec("open -a Weather")
+  else
+    sbar.exec([[osascript -e 'tell application "BetterTouchTool" to trigger_named "metero"' 2>/dev/null &]])
+  end
+end)
+
 update_weather()
