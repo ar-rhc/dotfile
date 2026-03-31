@@ -7,9 +7,11 @@ local volume = sbar.add("item", "volume_desktop", {
   icon = {
     string = icons.volume._100,
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
+    padding_left = 2,
+    padding_right = 2,
   },
   label = { drawing = false },
-  padding_left = 3,
+  padding_left = 0,
   padding_right = 3,
   update_freq = 5,
   updates = "on",

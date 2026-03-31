@@ -6,9 +6,11 @@ local input = sbar.add("item", "input_source", {
   icon = {
     font = { family = settings.font.text, style = "Regular", size = 20.0 },
     color = colors.white,
+    padding_left = 2,
+    padding_right = 2,
   },
   padding_left = 3,
-  padding_right = 3,
+  padding_right = 0,
   update_freq = 1,
   updates = "on",
   click_script = [[

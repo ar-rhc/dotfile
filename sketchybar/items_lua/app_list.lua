@@ -5,7 +5,7 @@ local icon_map = require("icon_map")
 local MAX_APPS = 12
 
 local app_list = sbar.add("item", "app_list", {
-  position = "right",
+  position = "left",
   icon = {
     string = "􀈕",
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
