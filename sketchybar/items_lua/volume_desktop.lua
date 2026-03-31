@@ -55,6 +55,7 @@ end
 -- Hover: show slider after 0.5s delay
 local hover_timer = nil
 volume:subscribe("mouse.entered", function(env)
+  update_icon()
   hover_timer = sbar.delay(0.5, function()
     sbar.exec("betterdisplaycli get -n=LG --volume", function(vol)
       vol = vol:gsub("%s+", "")
@@ -93,7 +94,7 @@ volume:subscribe("mouse.clicked", function()
   sbar.delay(0.3, function() update_icon() end)
 end)
 
--- Periodic update
-volume:subscribe({ "routine", "forced", "volume_change", "system_woke" }, function()
+-- Periodic + wake update
+volume:subscribe({ "routine", "system_woke" }, function()
   update_icon()
 end)
