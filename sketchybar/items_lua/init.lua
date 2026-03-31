@@ -19,6 +19,7 @@ require("items_lua.input_source")
 require("items_lua.wifi")
 require("items_lua.ram")
 -- require("items_lua.cpu")  -- disabled for now
+require("items_lua.brew")
 require("items_lua.weather")
 require("items_lua.music")
 require("items_lua.app_list")
