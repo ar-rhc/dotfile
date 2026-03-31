@@ -30,6 +30,7 @@ local cpu_percent = sbar.add("graph", "cpu.percent", 75, {
   padding_right = 3,
   update_freq = 4,
   updates = "on",
+  mach_helper = "git.felix.helper",
 })
 
 -- Top process label (shown below/beside the graph)
@@ -54,6 +55,9 @@ local cpu_top = sbar.add("item", "cpu.top", {
 -- - Sets cpu.top label with top process name
 -- The helper is already started in init.lua
 
+-- Connect to the C helper via mach_helper
+sbar.exec("sketchybar --set cpu.percent mach_helper=git.felix.helper")
+
 -- Subscribe to trigger the helper
 cpu_percent:subscribe("routine", function() end)
 
@@ -62,8 +66,30 @@ cpu_percent:subscribe("mouse.clicked", function()
   sbar.exec("open -a 'Activity Monitor'")
 end)
 
--- Bracket: group RAM + CPU visually
+-- Bracket: group RAM + CPU
 sbar.add("bracket", "system_stats", { "ram", "cpu.percent" }, {
+  background = {
+    color = colors.with_alpha(colors.bg1, 0.5),
+    border_color = colors.bg2,
+    border_width = 2,
+    corner_radius = 11,
+    height = 30,
+  },
+})
+
+-- Bracket: calendar + next event
+sbar.add("bracket", "time_events", { "calendar", "next_event" }, {
+  background = {
+    color = colors.with_alpha(colors.bg1, 0.5),
+    border_color = colors.bg2,
+    border_width = 2,
+    corner_radius = 11,
+    height = 30,
+  },
+})
+
+-- Bracket: volume + input source
+sbar.add("bracket", "audio_input", { "volume_desktop", "input_source" }, {
   background = {
     color = colors.with_alpha(colors.bg1, 0.5),
     border_color = colors.bg2,
