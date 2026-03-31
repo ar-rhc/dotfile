@@ -308,6 +308,11 @@ t = [
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
     'mode main'
 ]
+c = [
+    'exec-and-forget open -a Calendar',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
 f = [
     'exec-and-forget open -a Finder',
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',

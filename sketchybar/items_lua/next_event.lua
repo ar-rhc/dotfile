@@ -6,6 +6,9 @@ local EXCLUDE_CALENDARS = "Shorebird Centre Tides & Events, Tiritiri Ferry Sched
 local MAX_TITLE = 20
 local LOOKAHEAD_DAYS = 1
 
+local MAX_POPUP_EVENTS = 8
+local popup_width = 280
+
 local next_event = sbar.add("item", "next_event", {
   position = "right",
   icon = { string = "􀧞" },
@@ -14,7 +17,41 @@ local next_event = sbar.add("item", "next_event", {
   display = 2,
   update_freq = 60,
   updates = "on",
-  click_script = "/Users/alex/.config/sketchybar/plugins/scripts/next_event_click.sh",
+  popup = { height = 30, background = { border_width = 0 } },
+})
+
+-- Popup items for today's events
+local event_items = {}
+for i = 1, MAX_POPUP_EVENTS do
+  event_items[i] = sbar.add("item", "next_event.e" .. i, {
+    position = "popup.next_event",
+    icon = {
+      font = { family = settings.font.text, style = "Regular", size = 12.0 },
+      width = 50,
+      align = "right",
+      color = colors.blue,
+    },
+    label = {
+      font = { family = settings.font.text, style = "Regular", size = 12.0 },
+      width = popup_width - 50,
+      color = colors.white,
+    },
+    drawing = false,
+  })
+end
+
+-- Open Calendar on Cmd+click
+sbar.add("item", "next_event.open", {
+  position = "popup.next_event",
+  icon = { drawing = false },
+  label = {
+    string = "⌘+click to open Calendar",
+    font = { family = settings.font.text, style = "Regular", size = 10.0 },
+    color = colors.grey,
+    align = "center",
+    width = popup_width,
+  },
+  background = { height = 2, color = colors.grey, y_offset = 12 },
 })
 
 local function truncate(s, max)
@@ -124,6 +161,81 @@ end
 
 next_event:subscribe({ "routine", "forced", "system_woke" }, function()
   update_event()
+end)
+
+-- Click: show today's events, Cmd+click opens Calendar
+next_event:subscribe("mouse.clicked", function(env)
+  if env.MODIFIER == "cmd" then
+    sbar.exec("open -a Calendar")
+    return
+  end
+
+  -- Fetch all today's events for popup
+  local cmd = 'icalBuddy -n -nc -ec "' .. EXCLUDE_CALENDARS .. '" -iep "datetime,title" -po "datetime,title" -ps "|^|" -tf "%H:%M" -df "%Y-%m-%d" -nrd -b "" -ea eventsToday 2>/dev/null'
+
+  sbar.exec(cmd, function(result)
+    result = result:gsub("%s+$", "")
+
+    -- Hide all popup items first
+    for i = 1, MAX_POPUP_EVENTS do
+      event_items[i]:set({ drawing = false })
+    end
+
+    if result == "" then
+      event_items[1]:set({
+        drawing = true,
+        icon = { string = "" },
+        label = { string = "No events today", color = colors.grey },
+      })
+      next_event:set({ popup = { drawing = "toggle" } })
+      return
+    end
+
+    local now = os.time()
+    local i = 1
+    for line in result:gmatch("[^\n]+") do
+      if i > MAX_POPUP_EVENTS then break end
+      local datetime, title = line:match("^(.-)%^(.+)")
+      if datetime and title then
+        local start_time = datetime:match("at (%d+:%d+)")
+        local end_time = datetime:match("- (%d+:%d+)")
+        local date_str = datetime:match("^(%d%d%d%d%-%d%d%-%d%d)")
+
+        if start_time and date_str then
+          local time_display = start_time
+          if end_time then time_display = start_time .. "-" .. end_time end
+
+          -- Color: past events grey, current green, future white
+          local start_sec = parse_timestamp(date_str, start_time)
+          local end_sec = end_time and parse_timestamp(date_str, end_time) or (start_sec + 3600)
+          local label_color = colors.white
+          local time_color = colors.blue
+          if start_sec and end_sec then
+            if end_sec < now then
+              label_color = colors.grey
+              time_color = colors.grey
+            elseif start_sec <= now then
+              label_color = colors.green
+              time_color = colors.green
+            end
+          end
+
+          event_items[i]:set({
+            drawing = true,
+            icon = { string = time_display, color = time_color },
+            label = { string = title, color = label_color },
+          })
+          i = i + 1
+        end
+      end
+    end
+
+    next_event:set({ popup = { drawing = "toggle" } })
+  end)
+end)
+
+next_event:subscribe("mouse.exited.global", function()
+  next_event:set({ popup = { drawing = false } })
 end)
 
 update_event()

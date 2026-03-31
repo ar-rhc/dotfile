@@ -71,7 +71,7 @@ local app_cheats = {
   { key = "Q", icon = ":weather:" }, { key = "W", icon = ":wechat:" },
   { key = "E", icon = ":microsoft_edge:" }, { key = "T", icon = ":iterm:" },
   { key = "F", icon = ":finder:" }, { key = "B", icon = ":bettertouchtool:" },
-  { key = "Z", icon = ":zotero:" }, { key = "M", icon = ":mail:" },
+  { key = "C", icon = ":calendar:" }, { key = "Z", icon = ":zotero:" }, { key = "M", icon = ":mail:" },
   { key = "ESC", icon = "Exit" },
 }
 
