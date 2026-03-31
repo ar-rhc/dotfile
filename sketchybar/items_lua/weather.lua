@@ -198,20 +198,16 @@ end
 
 weather:subscribe({ "routine", "forced" }, function() update_weather() end)
 
-weather:subscribe("mouse.entered", function()
-  weather:set({ popup = { drawing = true } })
-end)
-
-weather:subscribe("mouse.exited.global", function()
-  weather:set({ popup = { drawing = false } })
-end)
-
 weather:subscribe("mouse.clicked", function(env)
   if env.BUTTON == "right" then
     sbar.exec("open -a Weather")
   else
-    sbar.exec([[osascript -e 'tell application "BetterTouchTool" to trigger_named "metero"' 2>/dev/null &]])
+    weather:set({ popup = { drawing = "toggle" } })
   end
+end)
+
+weather:subscribe("mouse.exited.global", function()
+  weather:set({ popup = { drawing = false } })
 end)
 
 update_weather()
