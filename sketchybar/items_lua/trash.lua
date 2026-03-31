@@ -2,26 +2,34 @@ local icons = require("icons")
 
 local trash = sbar.add("item", "trash", {
   position = "right",
-  drawing = false,
   icon = { string = icons.trash, color = 0xffff9966 },
-  label = { padding_left = 0 },
+  label = { string = "", padding_left = 0 },
   padding_left = 3,
   padding_right = 3,
-  update_freq = 60,
+  update_freq = 30,
   updates = "on",
+  drawing = false,
 })
 
-trash:subscribe({ "routine", "forced" }, function(env)
-  sbar.exec("osascript -l JavaScript -e 'Application(\"Finder\").trash.items.length' 2>/dev/null || echo 0", function(count)
-    count = tonumber(count:gsub("%s+", "")) or 0
-    if count > 0 then
-      trash:set({ drawing = true, label = { string = tostring(count) } })
-    else
-      trash:set({ drawing = false, label = { string = "" } })
-    end
-  end)
+-- Use sketchybar CLI to set ourselves since sbar.exec callback has issues with osascript
+trash:subscribe("routine", function()
+  sbar.exec("count=$(osascript -l JavaScript -e 'Application(\"Finder\").trash.items.length' 2>/dev/null || echo 0); if [ \"$count\" -gt 0 ] 2>/dev/null; then sketchybar --set trash drawing=on label=\"$count\"; else sketchybar --set trash drawing=off; fi &")
 end)
 
 trash:subscribe("mouse.clicked", function(env)
-  sbar.exec("NAME=trash SENDER=mouse.clicked /bin/bash -c '/Users/alex/.config/sketchybar/plugins/trash.sh'")
+  if env.MODIFIER ~= "none" and env.MODIFIER ~= "" then
+    sbar.exec([[osascript -l JavaScript -e 'Application("Finder").trash.open()' &]])
+  else
+    sbar.exec([[osascript -l JavaScript -e '
+      var app = Application.currentApplication();
+      app.includeStandardAdditions = true;
+      app.displayDialog("Are you sure you want to permanently erase the items in the Trash?\n\nYou cannot undo this action.", {
+        buttons: ["Cancel", "Empty Trash"],
+        defaultButton: 2,
+        withIcon: Path("/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/FullTrashIcon.icns")
+      });' 2>/dev/null && osascript -l JavaScript -e 'var f=Application("Finder"); if(f.trash.items.length>0){f.empty()}' && sketchybar --set trash drawing=off &]])
+  end
 end)
+
+-- Initial check
+sbar.exec("count=$(osascript -l JavaScript -e 'Application(\"Finder\").trash.items.length' 2>/dev/null || echo 0); if [ \"$count\" -gt 0 ] 2>/dev/null; then sketchybar --set trash drawing=on label=\"$count\"; else sketchybar --set trash drawing=off; fi &")
