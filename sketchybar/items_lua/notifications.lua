@@ -3,10 +3,10 @@ local settings = require("settings")
 local icon_map = require("icon_map")
 
 local apps = {
-  { name = "mail",     bundle = "com.apple.mail",        display = "Mail" },
-  { name = "messages", bundle = "com.apple.MobileSMS",   display = "Messages" },
-  { name = "whatsapp", bundle = "net.whatsapp.WhatsApp", display = "WhatsApp" },
-  { name = "wechat",   bundle = "com.tencent.xinWeChat", display = "WeChat" },
+  { name = "mail",     display = "Mail" },
+  { name = "messages", display = "Messages" },
+  { name = "whatsapp", display = "WhatsApp" },
+  { name = "wechat",   display = "WeChat" },
 }
 
 -- Create notification items
@@ -51,24 +51,55 @@ local trigger = sbar.add("item", "notifications", {
   background = { drawing = false },
 })
 
--- Build a single shell command that checks all badges and sets items directly
--- This bypasses sbar.exec callback issues with empty/slow output
-local function build_check_cmd()
-  local cmd = ""
-  for _, a in ipairs(apps) do
-    local icon = icon_map.get(a.display)
-    cmd = cmd .. string.format(
-      [[badge=$(lsappinfo info -only StatusLabel '%s' 2>/dev/null | grep -o '"label"="[^"]*"' | cut -d'"' -f4); ]] ..
-      [[if [ -n "$badge" ] && [ "$badge" != " " ]; then ]] ..
-      [[sketchybar --set notif.%s drawing=on width=-1 label="$badge" icon='%s' icon.font="sketchybar-app-font:Regular:16.0"; ]] ..
-      [[else sketchybar --set notif.%s drawing=off width=0; fi; ]],
-      a.bundle, a.name, icon, a.name
-    )
-  end
-  return cmd
-end
+-- Per-app badge check commands using methods that actually work
+-- Mail: direct AppleScript query
+-- Others: Dock accessibility badge
+local mail_icon = icon_map.get("Mail")
+local messages_icon = icon_map.get("Messages")
+local whatsapp_icon = icon_map.get("WhatsApp")
+local wechat_icon = icon_map.get("WeChat")
 
-local check_cmd = build_check_cmd()
+local check_cmd = [[
+# Mail - use Mail.app AppleScript
+mail_badge=$(osascript -e 'try
+  tell application "Mail" to return unread count of inbox
+end try' 2>/dev/null)
+if [ -n "$mail_badge" ] && [ "$mail_badge" != "0" ] && [ "$mail_badge" != "missing value" ]; then
+  sketchybar --set notif.mail drawing=on width=-1 label="$mail_badge" icon=']] .. mail_icon .. [[' icon.font="sketchybar-app-font:Regular:16.0"
+else
+  sketchybar --set notif.mail drawing=off width=0
+fi
+
+# Messages - Dock badge
+msg_badge=$(osascript -e 'tell application "System Events" to tell process "Dock" to try
+  return value of attribute "AXStatusLabel" of UI element "Messages" of list 1
+end try' 2>/dev/null)
+if [ -n "$msg_badge" ] && [ "$msg_badge" != "0" ] && [ "$msg_badge" != "missing value" ]; then
+  sketchybar --set notif.messages drawing=on width=-1 label="$msg_badge" icon=']] .. messages_icon .. [[' icon.font="sketchybar-app-font:Regular:16.0"
+else
+  sketchybar --set notif.messages drawing=off width=0
+fi
+
+# WhatsApp - Dock badge
+wa_badge=$(osascript -e 'tell application "System Events" to tell process "Dock" to try
+  return value of attribute "AXStatusLabel" of UI element "WhatsApp" of list 1
+end try' 2>/dev/null)
+if [ -n "$wa_badge" ] && [ "$wa_badge" != "0" ] && [ "$wa_badge" != "missing value" ]; then
+  sketchybar --set notif.whatsapp drawing=on width=-1 label="$wa_badge" icon=']] .. whatsapp_icon .. [[' icon.font="sketchybar-app-font:Regular:16.0"
+else
+  sketchybar --set notif.whatsapp drawing=off width=0
+fi
+
+# WeChat - Dock badge
+wc_badge=$(osascript -e 'tell application "System Events" to tell process "Dock" to try
+  return value of attribute "AXStatusLabel" of UI element "WeChat" of list 1
+end try' 2>/dev/null)
+if [ -n "$wc_badge" ] && [ "$wc_badge" != "0" ] && [ "$wc_badge" != "missing value" ]; then
+  sketchybar --set notif.wechat drawing=on width=-1 label="$wc_badge" icon=']] .. wechat_icon .. [[' icon.font="sketchybar-app-font:Regular:16.0"
+else
+  sketchybar --set notif.wechat drawing=off width=0
+fi
+]]
 
 trigger:subscribe({ "routine", "forced", "system_woke" }, function()
   sbar.exec(check_cmd .. " &")
