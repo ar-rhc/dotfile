@@ -12,7 +12,7 @@ local popup_width = 280
 -- State for collapsed/expanded labels
 local last_short_label = ""
 local last_full_label = ""
-local dismissed_event = ""  -- title of dismissed event
+local skip_count = 0  -- how many events to skip in bar display
 
 local next_event = sbar.add("item", "next_event", {
   position = "right",
@@ -65,7 +65,7 @@ sbar.add("item", "next_event.skip", {
   position = "popup.next_event",
   icon = { drawing = false },
   label = {
-    string = "Skip this event",
+    string = "Next →",
     font = { family = settings.font.text, style = "Regular", size = 10.0 },
     color = colors.orange,
     align = "center",
@@ -111,17 +111,12 @@ local function update_event()
 
     local now = os.time()
     local today = os.date("%Y-%m-%d")
-    local best_type, best_title, best_start, best_end
-    local current_title, current_start, current_end
-    local next_title, next_start, next_end
 
+    -- Collect all valid events sorted by start time
+    local events = {}
     for line in result:gmatch("[^\n]+") do
-      -- Parse: "2026-03-31 at 19:00 - 20:00^Title"
       local datetime, title = line:match("^(.-)%^(.+)")
       if datetime and title then
-        -- Skip dismissed event
-        if title == dismissed_event then goto continue end
-
         local date_str = datetime:match("^(%d%d%d%d%-%d%d%-%d%d)")
         local start_time = datetime:match("at (%d+:%d+)")
         local end_time = datetime:match("- (%d+:%d+)")
@@ -131,44 +126,47 @@ local function update_event()
           local end_sec = end_time and parse_timestamp(date_str, end_time) or (start_sec and start_sec + 3600)
 
           if start_sec and end_sec then
-            -- Current event (ongoing)
+            local event_type = nil
             if start_sec <= now and end_sec > now then
-              if not current_start or start_sec > current_start then
-                current_title, current_start, current_end = title, start_sec, end_sec
-              end
-            end
-
-            -- Next upcoming event
-            if start_sec > now then
+              event_type = "current"
+            elseif start_sec > now then
               local event_date = os.date("%Y-%m-%d", start_sec)
               local hours_until = (start_sec - now) / 3600
               if event_date == today or hours_until <= 10 then
-                if not next_start or start_sec < next_start then
-                  next_title, next_start, next_end = title, start_sec, end_sec
-                end
+                event_type = "next"
               end
+            end
+            if event_type then
+              table.insert(events, { type = event_type, title = title, start = start_sec, ends = end_sec })
             end
           end
         end
-        ::continue::
       end
     end
 
-    -- Priority: next overlapping current > current > next
-    if current_title and next_title and next_start < current_end then
-      best_type, best_title, best_start, best_end = "next", next_title, next_start, next_end
-    elseif current_title then
-      best_type, best_title, best_start, best_end = "current", current_title, current_start, current_end
-    elseif next_title then
-      best_type, best_title, best_start, best_end = "next", next_title, next_start, next_end
-    end
+    -- Sort: current events first, then by start time
+    table.sort(events, function(a, b)
+      if a.type == "current" and b.type ~= "current" then return true end
+      if a.type ~= "current" and b.type == "current" then return false end
+      return a.start < b.start
+    end)
 
-    if not best_title then
+    -- Pick event based on skip_count
+    local idx = skip_count + 1
+    if idx > #events then idx = #events end
+    local best = events[idx]
+
+    if not best then
       next_event:set({ label = { string = "" }, drawing = false })
       last_short_label = ""
       last_full_label = ""
       return
     end
+
+    local best_type = best.type
+    local best_title = best.title
+    local best_start = best.start
+    local best_end = best.ends
 
     local short_label, full_label
     if best_type == "current" then
@@ -297,12 +295,9 @@ next_event:subscribe("mouse.exited.global", function()
   next_event:set({ popup = { drawing = false } })
 end)
 
--- Skip: dismiss the currently shown event
+-- Next: skip to show the next event in bar (popup still shows all)
 next_event:subscribe("next_event_skip", function()
-  if last_full_label ~= "" then
-    dismissed_event = last_full_label:match("^(.-)%s+•") or ""
-    dismissed_event = dismissed_event:gsub("%.%.%.$", "")
-  end
+  skip_count = skip_count + 1
   update_event()
 end)
 
