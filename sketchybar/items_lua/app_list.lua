@@ -5,7 +5,7 @@ local icon_map = require("icon_map")
 local MAX_APPS = 12
 
 local app_list = sbar.add("item", "app_list", {
-  position = "left",
+  position = "right",
   icon = {
     string = "􀈕",
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
@@ -77,7 +77,7 @@ sbar.add("item", "app_list.hint", {
 })
 
 -- Hover: show running apps
-app_list:subscribe("mouse.clicked", function()
+app_list:subscribe("mouse.entered", function()
   -- Hide all first
   for i = 1, MAX_APPS do
     app_items[i]:set({ drawing = false })
@@ -92,7 +92,7 @@ app_list:subscribe("mouse.clicked", function()
         icon = { string = "" },
         label = { string = "No windows", color = colors.grey },
       })
-      app_list:set({ popup = { drawing = "toggle" } })
+      app_list:set({ popup = { drawing = true } })
       return
     end
 
@@ -117,7 +117,7 @@ app_list:subscribe("mouse.clicked", function()
     -- Update the icon with count
     app_list:set({
       icon = { string = "􀈕", color = colors.white },
-      popup = { drawing = "toggle" },
+      popup = { drawing = true },
     })
   end)
 end)

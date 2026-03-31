@@ -3,7 +3,6 @@ require("items_lua.apple")
 require("items_lua.menu_trigger")
 require("items_lua.spaces")
 require("items_lua.front_app")
-require("items_lua.app_list")
 require("items_lua.timer")
 
 -- Center
@@ -19,6 +18,7 @@ require("items_lua.volume_desktop")
 require("items_lua.input_source")
 require("items_lua.wifi")
 require("items_lua.ram")
+require("items_lua.app_list")
 -- require("items_lua.cpu")  -- disabled for now
 require("items_lua.weather")
 require("items_lua.music")
