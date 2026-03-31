@@ -9,6 +9,11 @@ local LOOKAHEAD_DAYS = 1
 local MAX_POPUP_EVENTS = 8
 local popup_width = 280
 
+-- State for collapsed/expanded labels
+local last_short_label = ""
+local last_full_label = ""
+local dismissed_event = ""  -- title of dismissed event
+
 local next_event = sbar.add("item", "next_event", {
   position = "right",
   icon = { string = "􀧞" },
@@ -52,6 +57,21 @@ sbar.add("item", "next_event.open", {
     width = popup_width,
   },
   background = { height = 2, color = colors.grey, y_offset = 12 },
+})
+
+-- Skip/dismiss button
+sbar.add("event", "next_event_skip")
+sbar.add("item", "next_event.skip", {
+  position = "popup.next_event",
+  icon = { drawing = false },
+  label = {
+    string = "Skip this event",
+    font = { family = settings.font.text, style = "Regular", size = 10.0 },
+    color = colors.orange,
+    align = "center",
+    width = popup_width,
+  },
+  click_script = "sketchybar --set next_event popup.drawing=off; sketchybar --trigger next_event_skip",
 })
 
 local function truncate(s, max)
@@ -99,6 +119,9 @@ local function update_event()
       -- Parse: "2026-03-31 at 19:00 - 20:00^Title"
       local datetime, title = line:match("^(.-)%^(.+)")
       if datetime and title then
+        -- Skip dismissed event
+        if title == dismissed_event then goto continue end
+
         local date_str = datetime:match("^(%d%d%d%d%-%d%d%-%d%d)")
         local start_time = datetime:match("at (%d+:%d+)")
         local end_time = datetime:match("- (%d+:%d+)")
@@ -127,6 +150,7 @@ local function update_event()
             end
           end
         end
+        ::continue::
       end
     end
 
@@ -141,26 +165,44 @@ local function update_event()
 
     if not best_title then
       next_event:set({ label = { string = "" }, drawing = false })
+      last_short_label = ""
+      last_full_label = ""
       return
     end
 
-    local label
+    local short_label, full_label
     if best_type == "current" then
       local left = best_end - now
-      label = truncate(best_title, MAX_TITLE) .. " " .. format_remaining(left, "")
-      label = label:gsub("•  ", "•"):gsub("• ", "•")
-      label = truncate(best_title, MAX_TITLE) .. " •" .. math.floor(left / 60) .. "min left"
+      short_label = "•" .. math.floor(left / 60) .. "min left"
+      full_label = truncate(best_title, MAX_TITLE) .. " " .. short_label
     else
       local until_start = best_start - now
-      label = truncate(best_title, MAX_TITLE) .. " " .. format_remaining(until_start, "in")
+      short_label = format_remaining(until_start, "in")
+      full_label = truncate(best_title, MAX_TITLE) .. " " .. short_label
     end
 
-    next_event:set({ label = { string = label }, drawing = true })
+    last_short_label = short_label
+    last_full_label = full_label
+    -- Show collapsed by default
+    next_event:set({ label = { string = short_label }, drawing = true })
   end)
 end
 
 next_event:subscribe({ "routine", "forced", "system_woke" }, function()
   update_event()
+end)
+
+-- Hover: expand to show full title
+next_event:subscribe("mouse.entered", function()
+  if last_full_label and last_full_label ~= "" then
+    next_event:set({ label = { string = last_full_label } })
+  end
+end)
+
+next_event:subscribe("mouse.exited", function()
+  if last_short_label and last_short_label ~= "" then
+    next_event:set({ label = { string = last_short_label } })
+  end
 end)
 
 -- Click: show today's events, Cmd+click opens Calendar
@@ -253,6 +295,15 @@ end)
 
 next_event:subscribe("mouse.exited.global", function()
   next_event:set({ popup = { drawing = false } })
+end)
+
+-- Skip: dismiss the currently shown event
+next_event:subscribe("next_event_skip", function()
+  if last_full_label ~= "" then
+    dismissed_event = last_full_label:match("^(.-)%s+•") or ""
+    dismissed_event = dismissed_event:gsub("%.%.%.$", "")
+  end
+  update_event()
 end)
 
 update_event()
