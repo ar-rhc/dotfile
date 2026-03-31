@@ -128,6 +128,7 @@ PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
 
 ########## Layout Commands ##########
 alt-ctrl-shift-slash = 'layout tiles horizontal vertical'
+alt-ctrl-shift-period = 'layout accordion horizontal vertical'
 alt-ctrl-shift-comma = 'layout accordion horizontal vertical'
 alt-ctrl-shift-f = ['layout floating tiling']
 alt-ctrl-shift-r = 'exec-and-forget /opt/homebrew/bin/sketchybar --update && /opt/homebrew/bin/sketchybar --bar color=0xa000804a && sleep 0.3 && /opt/homebrew/bin/sketchybar --bar color=0xa0000000'

@@ -1,5 +1,4 @@
 -- Left side (order matters: first added = leftmost)
-require("items_lua.app_list")
 require("items_lua.apple")
 require("items_lua.menu_trigger")
 require("items_lua.spaces")
@@ -22,4 +21,5 @@ require("items_lua.ram")
 -- require("items_lua.cpu")  -- disabled for now
 require("items_lua.weather")
 require("items_lua.music")
+require("items_lua.app_list")
 require("items_lua.brackets")
