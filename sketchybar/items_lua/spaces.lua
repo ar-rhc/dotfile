@@ -1,5 +1,6 @@
 local colors = require("colors")
 local settings = require("settings")
+local icon_map = require("icon_map")
 
 -- Register events
 sbar.add("event", "aerospace_workspace_change")
@@ -71,10 +72,7 @@ local function get_icon_strip(sid)
 
   local strip = " "
   for _, app in ipairs(apps) do
-    local ih = io.popen("$CONFIG_DIR/plugins/icon_map.sh '" .. app .. "'")
-    local icon = ih:read("*a"):gsub("%s+$", "")
-    ih:close()
-    strip = strip .. " " .. icon
+    strip = strip .. " " .. icon_map.get(app)
   end
   return strip
 end
@@ -177,33 +175,19 @@ local function reload_workspace_icons(ws_id)
       return
     end
 
-    -- Build icon strip
-    local icon_cmds = {}
+    -- Build icon strip using Lua table lookup (instant, no shell)
+    local strip = " "
     for app in apps_str:gmatch("[^\n]+") do
-      if app ~= "" then table.insert(icon_cmds, app) end
+      if app ~= "" then
+        strip = strip .. " " .. icon_map.get(app)
+      end
     end
 
-    if #icon_cmds == 0 then
-      if spaces[ws_id] then spaces[ws_id]:set({ label = { string = "" } }) end
-      return
+    if spaces[ws_id] then
+      sbar.animate("sin", 10, function()
+        spaces[ws_id]:set({ label = { string = strip } })
+      end)
     end
-
-    -- Build a single shell command to get all icons at once
-    local cmd = ""
-    for _, app in ipairs(icon_cmds) do
-      cmd = cmd .. "/Users/alex/.config/sketchybar/plugins/icon_map.sh '" .. app .. "'; "
-    end
-    sbar.exec(cmd, function(icons_str)
-      local strip = " "
-      for icon in icons_str:gmatch("[^\n]+") do
-        strip = strip .. " " .. icon:gsub("%s+$", "")
-      end
-      if spaces[ws_id] then
-        sbar.animate("sin", 10, function()
-          spaces[ws_id]:set({ label = { string = strip } })
-        end)
-      end
-    end)
   end)
 end
 

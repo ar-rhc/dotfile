@@ -1,5 +1,6 @@
 local colors = require("colors")
 local settings = require("settings")
+local icon_map = require("icon_map")
 
 local apps = {
   { name = "mail",     bundle = "com.apple.mail",        app = "Mail",     display = "Mail" },
@@ -67,15 +68,12 @@ local function update_notif(name, badge)
   local ni = notif_items[name]
   if not ni then return end
   if badge then
-    sbar.exec("/Users/alex/.config/sketchybar/plugins/icon_map.sh '" .. ni.app.display .. "'", function(icon)
-      icon = icon:gsub("%s+$", "")
-      ni.item:set({
-        icon = { string = icon },
-        label = { string = badge },
-        drawing = true,
-        width = "dynamic",
-      })
-    end)
+    ni.item:set({
+      icon = { string = icon_map.get(ni.app.display) },
+      label = { string = badge },
+      drawing = true,
+      width = "dynamic",
+    })
   else
     ni.item:set({ drawing = false, width = 0 })
   end

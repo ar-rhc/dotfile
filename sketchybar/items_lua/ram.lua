@@ -1,5 +1,6 @@
 local colors = require("colors")
 local settings = require("settings")
+local icon_map = require("icon_map")
 
 local NUM_PROCS = 8
 
@@ -164,11 +165,7 @@ ram:subscribe("mouse.clicked", function()
           icon = { string = "—" },
         })
 
-        local idx = i
-        sbar.exec("/Users/alex/.config/sketchybar/plugins/icon_map.sh '" .. app_name .. "'", function(icon)
-          icon = icon:gsub("%s+$", "")
-          proc_items[idx]:set({ icon = { string = icon, color = label_color } })
-        end)
+        proc_items[i]:set({ icon = { string = icon_map.get(app_name), color = label_color } })
       end
       i = i + 1
     end
