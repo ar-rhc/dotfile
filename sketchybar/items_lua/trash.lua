@@ -12,12 +12,12 @@ local trash = sbar.add("item", "trash", {
 })
 
 trash:subscribe({ "routine", "forced" }, function(env)
-  sbar.exec("osascript -l JavaScript -e 'Application(\"Finder\").trash.items.length'", function(count)
+  sbar.exec("osascript -l JavaScript -e 'Application(\"Finder\").trash.items.length' 2>/dev/null || echo 0", function(count)
     count = tonumber(count:gsub("%s+", "")) or 0
     if count > 0 then
       trash:set({ drawing = true, label = { string = tostring(count) } })
     else
-      trash:set({ drawing = false })
+      trash:set({ drawing = false, label = { string = "" } })
     end
   end)
 end)

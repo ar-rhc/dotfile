@@ -13,7 +13,7 @@ local volume = sbar.add("item", "volume_desktop", {
   padding_right = 3,
   update_freq = 5,
   updates = "on",
-  click_script = "/Users/alex/.config/sketchybar/plugins/volume_desktop_click.sh",
+  click_script = "betterdisplaycli toggle -n=LG --mute",
 })
 
 local slider = sbar.add("slider", "volume_desktop_slider", 0, {
@@ -86,6 +86,11 @@ slider:subscribe("mouse.clicked", function(env)
   local vol = pct / 100.0
   sbar.exec("betterdisplaycli set -n=LG --volume=" .. vol)
   update_icon()
+end)
+
+-- Click: update icon after mute toggle
+volume:subscribe("mouse.clicked", function()
+  sbar.delay(0.3, function() update_icon() end)
 end)
 
 -- Periodic update

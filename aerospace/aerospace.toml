@@ -130,7 +130,8 @@ PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
 alt-ctrl-shift-slash = 'layout tiles horizontal vertical'
 alt-ctrl-shift-comma = 'layout accordion horizontal vertical'
 alt-ctrl-shift-f = ['layout floating tiling']
-## alt-ctrl-shift-v = ## Using BTT to center window
+alt-ctrl-shift-r = 'exec-and-forget /opt/homebrew/bin/sketchybar --update && /opt/homebrew/bin/sketchybar --bar color=0xa000804a && sleep 0.3 && /opt/homebrew/bin/sketchybar --bar color=0xa0000000'
+alt-ctrl-shift-v = 'exec-and-forget /bin/bash $HOME/dotfiles/aerospace/scripts/center-window.sh' # Center active window
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
@@ -338,9 +339,10 @@ esc = [
     'mode main',
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
     'reload-config',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --reload'
+    'exec-and-forget /opt/homebrew/bin/sketchybar --update'
 ]
 r = ['flatten-workspace-tree'] # reset layout
+q = ['exec-and-forget /opt/homebrew/bin/sketchybar --reload'] # Full SketchyBar reload
 #s = ['layout sticky tiling'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
 f = ['layout floating tiling'] # Toggle between floating and tiling layout
 d = ['exec-and-forget /bin/bash $HOME/dotfiles/aerospace/scripts/toggle-floating-default.sh'] # Toggle default float/tile for focused app
@@ -376,7 +378,6 @@ m = []
 n = []
 o = []
 p = []
-q = []
 u = []
 v = []
 x = []

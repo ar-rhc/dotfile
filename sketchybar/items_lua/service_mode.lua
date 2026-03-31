@@ -55,7 +55,8 @@ local service_cheats = {
   { key = "s", action = "split" }, { key = "w", action = "close" },
   { key = "+/-", action = "size" }, { key = "g", action = "gaps" },
   { key = "r", action = "reset" }, { key = "c", action = "empty" },
-  { key = "hjkl", action = "join" }, { key = "esc", action = "exit" },
+  { key = "q", action = "reload" }, { key = "hjkl", action = "join" },
+  { key = "esc", action = "exit" },
 }
 
 local service_cheat_items = {}
