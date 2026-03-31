@@ -110,9 +110,37 @@ for _, ws in ipairs(get_workspaces()) do
     },
   })
 
-  space:subscribe({ "aerospace_workspace_change", "display_change", "system_woke",
-                     "mouse.clicked", "mouse.entered", "mouse.exited" }, function(env)
-    sbar.exec("/bin/bash -c 'export CONFIG_DIR=/Users/alex/.config/sketchybar; export NAME=" .. space.name .. "; export SENDER=" .. (env.SENDER or "routine") .. "; /Users/alex/.config/sketchybar/plugins/space.sh'")
+  -- Click: switch workspace (shift+click to rename)
+  space:subscribe("mouse.clicked", function(env)
+    local ws_name = ws.id
+    if env.MODIFIER == "shift" then
+      sbar.exec("osascript -e 'return (text returned of (display dialog \"Give a name to space " .. ws_name .. ":\" default answer \"\" with icon note buttons {\"Cancel\", \"Continue\"} default button \"Continue\"))' 2>/dev/null", function(label)
+        label = label:gsub("%s+$", "")
+        if label == "" then
+          space:set({ icon = { string = ws_name } })
+        else
+          space:set({ icon = { string = ws_name .. " (" .. label .. ")" } })
+        end
+      end)
+    else
+      sbar.exec("aerospace workspace " .. ws_name)
+    end
+  end)
+
+  -- Hover highlight
+  space:subscribe("mouse.entered", function()
+    space:set({ background = { border_color = 0x80c0efff }, icon = { highlight = true } })
+  end)
+
+  space:subscribe("mouse.exited", function()
+    sbar.exec("aerospace list-workspaces --focused", function(focused)
+      focused = focused:gsub("%s+$", "")
+      if focused == ws.id then
+        space:set({ background = { border_color = colors.grey }, icon = { highlight = true } })
+      else
+        space:set({ background = { border_color = colors.bg2 }, icon = { highlight = false } })
+      end
+    end)
   end)
 
   spaces[ws.id] = space
@@ -200,6 +228,44 @@ local function highlight_focused()
   end)
 end
 
+-- Refresh display assignments for all monitors
+local function refresh_space_displays()
+  sbar.exec("aerospace list-monitors | awk '{print $1}'", function(monitors_str)
+    local monitors = {}
+    for m in monitors_str:gmatch("[^\n]+") do table.insert(monitors, tonumber(m)) end
+    local num_monitors = #monitors
+
+    sbar.exec("aerospace list-workspaces --focused", function(focused)
+      focused = focused:gsub("%s+$", "")
+
+      for _, m in ipairs(monitors) do
+        local sketchy_display = m
+        if num_monitors == 2 then sketchy_display = 3 - m end
+
+        sbar.exec("aerospace list-workspaces --monitor " .. m .. " --empty no", function(non_empty)
+          for w in non_empty:gmatch("[^\n]+") do
+            w = w:gsub("%s+", "")
+            if spaces[w] then spaces[w]:set({ display = sketchy_display }) end
+          end
+        end)
+
+        sbar.exec("aerospace list-workspaces --monitor " .. m .. " --empty", function(empty)
+          for w in empty:gmatch("[^\n]+") do
+            w = w:gsub("%s+", "")
+            if spaces[w] then
+              if w == focused then
+                spaces[w]:set({ display = sketchy_display })
+              else
+                spaces[w]:set({ display = 0 })
+              end
+            end
+          end
+        end)
+      end
+    end)
+  end)
+end
+
 local function refresh_all_focused()
   sbar.exec("aerospace list-workspaces --focused", function(focused)
     focused = focused:gsub("%s+$", "")
@@ -208,9 +274,26 @@ local function refresh_all_focused()
   highlight_focused()
 end
 
+-- Full workspace change handler (replaces space_windows.sh)
+local function on_workspace_change()
+  sbar.exec("echo $AEROSPACE_FOCUSED_WORKSPACE $AEROSPACE_PREV_WORKSPACE", function(ws)
+    local focused, prev = ws:match("(%S+)%s+(%S+)")
+    if focused then reload_workspace_icons(focused) end
+    if prev and prev ~= focused then reload_workspace_icons(prev) end
+  end)
+
+  -- Animate focused workspace
+  highlight_focused()
+  refresh_space_displays()
+end
+
 -- Space creator handles workspace changes + display updates
-space_creator:subscribe({ "aerospace_workspace_change", "display_change" }, function(env)
-  sbar.exec("/bin/bash -c 'export CONFIG_DIR=/Users/alex/.config/sketchybar; export SENDER=" .. (env.SENDER or "routine") .. "; /Users/alex/.config/sketchybar/plugins/space_windows.sh'")
+space_creator:subscribe({ "aerospace_workspace_change" }, function()
+  on_workspace_change()
+end)
+
+space_creator:subscribe("display_change", function()
+  refresh_space_displays()
 end)
 
 -- Window open/close detection (kernel event, zero CPU)
