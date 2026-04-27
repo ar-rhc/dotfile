@@ -66,27 +66,28 @@ key-mapping.preset = 'qwerty'
 #                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 # Name-based assignment: each list is a fallback chain — AeroSpace picks the
-# first matching connected monitor. Adapts automatically across 2- and 3-
-# monitor setups (HP optional). Monitor names match `aerospace list-monitors`.
+# first matching connected monitor. Final 'main' entry guarantees a match on
+# any setup (e.g. MacBook with only the built-in display, where none of the
+# named external monitors are connected). Adapts across 1/2/3-monitor setups.
 [workspace-to-monitor-force-assignment]
-# Group 1 — preferred on HP, falls back to LG when HP is not connected
-1 = ['HP E24u G4', 'LG ULTRAFINE']
-Q = ['HP E24u G4', 'LG ULTRAFINE']
-A = ['HP E24u G4', 'LG ULTRAFINE']
-Z = ['HP E24u G4', 'LG ULTRAFINE']
+# Group 1 — preferred on HP, falls back to LG, then to main
+1 = ['HP E24u G4', 'LG ULTRAFINE', 'main']
+Q = ['HP E24u G4', 'LG ULTRAFINE', 'main']
+A = ['HP E24u G4', 'LG ULTRAFINE', 'main']
+Z = ['HP E24u G4', 'LG ULTRAFINE', 'main']
 
-# Group 2 — always on LG (main monitor)
-2 = 'LG ULTRAFINE'
-W = 'LG ULTRAFINE'
-S = 'LG ULTRAFINE'
-X = 'LG ULTRAFINE'
+# Group 2 — LG, falls back to main
+2 = ['LG ULTRAFINE', 'main']
+W = ['LG ULTRAFINE', 'main']
+S = ['LG ULTRAFINE', 'main']
+X = ['LG ULTRAFINE', 'main']
 
-# Group 3 — always on Samsung
-3 = 'S24C31x'
-E = 'S24C31x'
-D = 'S24C31x'
-C = 'S24C31x'
-M = 'S24C31x'
+# Group 3 — Samsung, falls back to main
+3 = ['S24C31x', 'main']
+E = ['S24C31x', 'main']
+D = ['S24C31x', 'main']
+C = ['S24C31x', 'main']
+M = ['S24C31x', 'main']
 
 
 [gaps]
