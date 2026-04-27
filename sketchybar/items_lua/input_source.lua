@@ -3,6 +3,7 @@ local settings = require("settings")
 
 local input = sbar.add("item", "input_source", {
   position = "right",
+  display = require("displays").lg,
   icon = {
     font = { family = settings.font.text, style = "Regular", size = 20.0 },
     color = colors.white,

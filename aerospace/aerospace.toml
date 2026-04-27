@@ -65,24 +65,28 @@ key-mapping.preset = 'qwerty'
 #                 In this example, 24 is a default value when there is no match.
 #                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
+# Name-based assignment: each list is a fallback chain — AeroSpace picks the
+# first matching connected monitor. Adapts automatically across 2- and 3-
+# monitor setups (HP optional). Monitor names match `aerospace list-monitors`.
 [workspace-to-monitor-force-assignment]
-# Monitor 1: HP E24u G4
-1 = 1
-Q = 1
-A = 1
-Z = 1
-# Monitor 2: LG ULTRAFINE
-2 = 2
-W = 2
-S = 2
-X = 2
+# Group 1 — preferred on HP, falls back to LG when HP is not connected
+1 = ['HP E24u G4', 'LG ULTRAFINE']
+Q = ['HP E24u G4', 'LG ULTRAFINE']
+A = ['HP E24u G4', 'LG ULTRAFINE']
+Z = ['HP E24u G4', 'LG ULTRAFINE']
 
-# Monitor 3: S24C31x
-3 = 3
-E = 3
-D = 3
-C = 3
-M = 3
+# Group 2 — always on LG (main monitor)
+2 = 'LG ULTRAFINE'
+W = 'LG ULTRAFINE'
+S = 'LG ULTRAFINE'
+X = 'LG ULTRAFINE'
+
+# Group 3 — always on Samsung
+3 = 'S24C31x'
+E = 'S24C31x'
+D = 'S24C31x'
+C = 'S24C31x'
+M = 'S24C31x'
 
 
 [gaps]
@@ -431,11 +435,11 @@ semicolon = []
 
 [[on-window-detected]]
 if.app-id = 'com.kakao.KakaoTalkMac'
-run = ['move-node-to-workspace 8', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace 8', 'workspace 8', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tdesktop.Telegram'
-run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace A', 'workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tdesktop.Telegram'
@@ -444,12 +448,12 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.hnc.Discord'
-run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace A', 'workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
 [[on-window-detected]]
 if.app-id = 'md.obsidian'
-run = ['move-node-to-workspace 1', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace 1', 'workspace 1', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.finder'
@@ -469,16 +473,16 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Music'
-run = ['move-node-to-workspace M', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace M', 'workspace M', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
 if.window-title-regex-substring = 'Weixin'
-run = ['move-node-to-workspace Q', 'move down', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace Q', 'move down', 'workspace Q', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.MobileSMS'
-run = ['move-node-to-workspace Q', 'move down', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace Q', 'move down', 'workspace Q', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
@@ -492,25 +496,25 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'br.paker.Calendr'
-run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace E', 'workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.mail'
-run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace E', 'workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.adobe.LightroomClassicCC7'
-run = ['move-node-to-workspace W', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace W', 'workspace W', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
 [[on-window-detected]]
 if.app-id = 'com.apple.findmy'
 if.window-title-regex-substring = 'Find My'
-run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace A', 'workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.iCal'
-run = ['move-node-to-workspace C', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace C', 'workspace C', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.window-title-regex-substring = 'Bitwarden'
@@ -518,12 +522,12 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.brave.Browser'
-run = ['move-node-to-workspace S', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace S', 'workspace S', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.edgemac'
-run = ['move-node-to-workspace 2', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace 2', 'workspace 2', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.edgemac'

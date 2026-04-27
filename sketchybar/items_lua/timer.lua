@@ -96,6 +96,7 @@ end
 
 -- Create timer item
 timer = sbar.add("item", "timer", {
+  display = require("displays").lg,
   icon = { string = icons.timer.idle, color = colors.grey },
   updates = "on",
   update_freq = 1,
@@ -123,7 +124,13 @@ timer:subscribe("routine", function()
 end)
 
 -- Hover popup
-timer:subscribe("mouse.entered", function() timer:set({ popup = { drawing = true } }) end)
+timer:subscribe("mouse.entered", function()
+  sbar.exec("sketchybar --trigger close_popups OPENER=timer")
+  timer:set({ popup = { drawing = true } })
+end)
+timer:subscribe("close_popups", function(env)
+  if env.OPENER ~= "timer" then timer:set({ popup = { drawing = false } }) end
+end)
 timer:subscribe("mouse.exited.global", function() timer:set({ popup = { drawing = false } }) end)
 
 -- Click: toggle

@@ -1,3 +1,6 @@
+-- Close other popups when one opens
+sbar.add("event", "close_popups")
+
 -- Left side (order matters: first added = leftmost)
 require("items_lua.apple")
 require("items_lua.menu_trigger")
@@ -21,6 +24,9 @@ require("items_lua.ram")
 -- require("items_lua.cpu")  -- disabled for now
 -- require("items_lua.brew")  -- disabled
 require("items_lua.weather")
+require("items_lua.nasa_gallery")
+require("items_lua.launchd")
+require("items_lua.claude_projects")
 require("items_lua.music")
 require("items_lua.app_list")
 require("items_lua.brackets")

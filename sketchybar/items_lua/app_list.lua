@@ -6,6 +6,7 @@ local MAX_APPS = 12
 
 local app_list = sbar.add("item", "app_list", {
   position = "right",
+  display = require("displays").lg,
   icon = {
     string = "􀈕",
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
@@ -76,8 +77,12 @@ sbar.add("item", "app_list.hint", {
   background = { height = 2, color = colors.grey, y_offset = 12 },
 })
 
--- Hover: show running apps
-app_list:subscribe("mouse.entered", function()
+-- Click: show running apps
+app_list:subscribe("close_popups", function(env)
+  if env.OPENER ~= "app_list" then app_list:set({ popup = { drawing = false } }) end
+end)
+app_list:subscribe("mouse.clicked", function()
+  sbar.exec("sketchybar --trigger close_popups OPENER=app_list")
   -- Hide all first
   for i = 1, MAX_APPS do
     app_items[i]:set({ drawing = false })

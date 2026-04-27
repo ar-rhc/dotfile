@@ -1,10 +1,23 @@
 local colors = require("colors")
 local settings = require("settings")
 local icon_map = require("icon_map")
+local displays = require("displays")
 
 -- Register events
 sbar.add("event", "aerospace_workspace_change")
 sbar.add("event", "window_moved")
+
+-- Module-level state
+local current_focused = ""
+local dividers = {}
+
+-- Build workspace-to-monitor-group lookup from settings
+local ws_to_monitor_group = {}
+for m, ws_list in pairs(settings.aerospace.monitors) do
+  for _, ws in ipairs(ws_list) do
+    ws_to_monitor_group[ws] = m
+  end
+end
 
 -- Get workspace info from AeroSpace at init time
 local function get_workspaces()
@@ -17,8 +30,7 @@ local function get_workspaces()
   local num_monitors = #monitors
 
   for _, m in ipairs(monitors) do
-    local sketchy_display = m
-    if num_monitors == 2 then sketchy_display = 3 - m end
+    local sketchy_display = displays.map[m] or m
 
     -- Get workspaces for this monitor in custom order
     local h = io.popen("aerospace list-workspaces --monitor " .. m)
@@ -27,19 +39,44 @@ local function get_workspaces()
     h:close()
 
     -- Custom ordering
-    local order = {}
+    local custom_order = {}
     local added = {}
     for ws in settings.aerospace.custom_order:gmatch("%S+") do
       for _, actual in ipairs(all_ws) do
         if actual:lower() == ws:lower() and not added[actual] then
-          table.insert(order, actual)
+          table.insert(custom_order, actual)
           added[actual] = true
         end
       end
     end
     -- Add any remaining
     for _, ws in ipairs(all_ws) do
-      if not added[ws] then table.insert(order, ws) end
+      if not added[ws] then table.insert(custom_order, ws) end
+    end
+
+    -- Group by monitor group (native group first), preserving custom order within
+    local grouped = {}
+    local group_list = {}
+    local seen_groups = {}
+    for _, sid in ipairs(custom_order) do
+      local grp = ws_to_monitor_group[sid] or m
+      if not grouped[grp] then grouped[grp] = {} end
+      if not seen_groups[grp] then
+        table.insert(group_list, grp)
+        seen_groups[grp] = true
+      end
+      table.insert(grouped[grp], sid)
+    end
+    table.sort(group_list, function(a, b)
+      if a == m then return true
+      elseif b == m then return false
+      else return a < b end
+    end)
+    local order = {}
+    for _, grp in ipairs(group_list) do
+      for _, sid in ipairs(grouped[grp]) do
+        table.insert(order, sid)
+      end
     end
 
     -- Get empty workspaces
@@ -53,6 +90,7 @@ local function get_workspaces()
         id = sid,
         display = sketchy_display,
         empty = empty[sid] or false,
+        monitor_group = ws_to_monitor_group[sid] or m,
       })
     end
   end
@@ -77,9 +115,35 @@ local function get_icon_strip(sid)
   return strip
 end
 
--- Create space items
+-- Create space items with dividers between monitor groups
 local spaces = {}
+local prev_group = nil
+
 for _, ws in ipairs(get_workspaces()) do
+  -- Insert divider at monitor group boundaries
+  if prev_group and ws.monitor_group ~= prev_group then
+    local div_name = "space_divider." .. prev_group .. "_" .. ws.monitor_group
+    local divider = sbar.add("item", div_name, {
+      icon = { drawing = false },
+      label = { drawing = false },
+      padding_left = 1,
+      padding_right = 1,
+      width = 6,
+      background = {
+        color = colors.with_alpha(colors.grey, 0.5),
+        height = 18,
+        corner_radius = 1,
+      },
+      display = 0, -- hidden by default; shown dynamically
+    })
+    dividers[div_name] = {
+      item = divider,
+      group_before = prev_group,
+      group_after = ws.monitor_group,
+    }
+  end
+  prev_group = ws.monitor_group
+
   local space = sbar.add("space", "space." .. ws.id, {
     space = ws.id,
     icon = {
@@ -130,15 +194,13 @@ for _, ws in ipairs(get_workspaces()) do
     space:set({ background = { border_color = 0x80c0efff }, icon = { highlight = true } })
   end)
 
+  -- Uses cached current_focused (no async call needed)
   space:subscribe("mouse.exited", function()
-    sbar.exec("aerospace list-workspaces --focused", function(focused)
-      focused = focused:gsub("%s+$", "")
-      if focused == ws.id then
-        space:set({ background = { border_color = colors.grey }, icon = { highlight = true } })
-      else
-        space:set({ background = { border_color = colors.bg2 }, icon = { highlight = false } })
-      end
-    end)
+    if current_focused == ws.id then
+      space:set({ background = { border_color = colors.grey }, icon = { highlight = true } })
+    else
+      space:set({ background = { border_color = colors.bg2 }, icon = { highlight = false } })
+    end
   end)
 
   spaces[ws.id] = space
@@ -157,7 +219,7 @@ local space_creator = sbar.add("item", "space_creator", {
   display = "active",
 })
 
--- Refresh icon strip for focused workspace (pure Lua)
+-- Refresh icon strip for a workspace (pure Lua icon lookup)
 local last_icon_cache = {}
 
 local function reload_workspace_icons(ws_id)
@@ -194,6 +256,7 @@ end
 local function highlight_focused()
   sbar.exec("aerospace list-workspaces --focused", function(focused)
     focused = focused:gsub("%s+$", "")
+    current_focused = focused
     for ws_id, space in pairs(spaces) do
       if ws_id == focused then
         space:set({
@@ -212,88 +275,147 @@ local function highlight_focused()
   end)
 end
 
--- Refresh display assignments for all monitors
+-- Refresh display assignments and divider visibility (single batched call)
 local function refresh_space_displays()
-  sbar.exec("aerospace list-monitors | awk '{print $1}'", function(monitors_str)
+  local cmd = [[/bin/bash -c '
+    focused=$(aerospace list-workspaces --focused)
+    echo "FOCUSED:$focused"
+    for m in $(aerospace list-monitors | awk "{print \$1}"); do
+      echo "MONITOR:$m"
+      echo "NONEMPTY:$(aerospace list-workspaces --monitor $m --empty no | tr "\n" ",")"
+      echo "EMPTY:$(aerospace list-workspaces --monitor $m --empty | tr "\n" ",")"
+    done
+  ']]
+
+  sbar.exec(cmd, function(result)
+    local focused = ""
     local monitors = {}
-    for m in monitors_str:gmatch("[^\n]+") do table.insert(monitors, tonumber(m)) end
-    local num_monitors = #monitors
+    local current_monitor = nil
+    local monitor_data = {} -- { [m] = { nonempty={}, empty={} } }
 
-    sbar.exec("aerospace list-workspaces --focused", function(focused)
-      focused = focused:gsub("%s+$", "")
+    for line in result:gmatch("[^\n]+") do
+      local f = line:match("^FOCUSED:(.+)$")
+      if f then focused = f:gsub("%s+", "") end
 
-      for _, m in ipairs(monitors) do
-        local sketchy_display = m
-        if num_monitors == 2 then sketchy_display = 3 - m end
-
-        sbar.exec("aerospace list-workspaces --monitor " .. m .. " --empty no", function(non_empty)
-          for w in non_empty:gmatch("[^\n]+") do
-            w = w:gsub("%s+", "")
-            if spaces[w] then spaces[w]:set({ display = sketchy_display }) end
-          end
-        end)
-
-        sbar.exec("aerospace list-workspaces --monitor " .. m .. " --empty", function(empty)
-          for w in empty:gmatch("[^\n]+") do
-            w = w:gsub("%s+", "")
-            if spaces[w] then
-              if w == focused then
-                spaces[w]:set({ display = sketchy_display })
-              else
-                spaces[w]:set({ display = 0 })
-              end
-            end
-          end
-        end)
+      local m = line:match("^MONITOR:(%d+)$")
+      if m then
+        current_monitor = tonumber(m)
+        table.insert(monitors, current_monitor)
+        monitor_data[current_monitor] = { nonempty = {}, empty = {} }
       end
-    end)
+
+      local ne = line:match("^NONEMPTY:(.*)$")
+      if ne and current_monitor then
+        for ws in ne:gmatch("[^,]+") do
+          local name = ws:gsub("%s+", "")
+          if name ~= "" then table.insert(monitor_data[current_monitor].nonempty, name) end
+        end
+      end
+
+      local em = line:match("^EMPTY:(.*)$")
+      if em and current_monitor then
+        for ws in em:gmatch("[^,]+") do
+          local name = ws:gsub("%s+", "")
+          if name ~= "" then table.insert(monitor_data[current_monitor].empty, name) end
+        end
+      end
+    end
+
+    current_focused = focused
+    local group_to_sketchy = {}
+
+    for _, m in ipairs(monitors) do
+      local sketchy_display = displays.map[m] or m
+
+      for _, name in ipairs(monitor_data[m].nonempty) do
+        if spaces[name] then spaces[name]:set({ display = sketchy_display }) end
+        local grp = ws_to_monitor_group[name]
+        if grp then group_to_sketchy[grp] = sketchy_display end
+      end
+
+      for _, name in ipairs(monitor_data[m].empty) do
+        local grp = ws_to_monitor_group[name]
+        if grp then group_to_sketchy[grp] = sketchy_display end
+        if spaces[name] then
+          if name == focused then
+            spaces[name]:set({ display = sketchy_display })
+          else
+            spaces[name]:set({ display = 0 })
+          end
+        end
+      end
+    end
+
+    -- Update divider visibility: show when adjacent groups share a display
+    for _, div in pairs(dividers) do
+      local d_before = group_to_sketchy[div.group_before]
+      local d_after = group_to_sketchy[div.group_after]
+      if d_before and d_after and d_before == d_after then
+        div.item:set({ display = d_before })
+      else
+        div.item:set({ display = 0 })
+      end
+    end
   end)
 end
 
 local function refresh_all_focused()
   sbar.exec("aerospace list-workspaces --focused", function(focused)
     focused = focused:gsub("%s+$", "")
+    current_focused = focused
     reload_workspace_icons(focused)
   end)
   highlight_focused()
 end
 
--- Full workspace change handler (replaces space_windows.sh)
-local function on_workspace_change()
-  sbar.exec("echo $AEROSPACE_FOCUSED_WORKSPACE $AEROSPACE_PREV_WORKSPACE", function(ws)
-    local focused, prev = ws:match("(%S+)%s+(%S+)")
-    if focused then reload_workspace_icons(focused) end
-    if prev and prev ~= focused then reload_workspace_icons(prev) end
-  end)
+-- Workspace change handler — uses env vars from subscriber callback directly
+local function on_workspace_change(env)
+  local focused = env.AEROSPACE_FOCUSED_WORKSPACE
+  local prev = env.AEROSPACE_PREV_WORKSPACE
 
-  -- Animate focused workspace
+  if focused and focused ~= "" then
+    current_focused = focused
+    reload_workspace_icons(focused)
+  end
+  if prev and prev ~= "" and prev ~= focused then
+    reload_workspace_icons(prev)
+  end
+
   highlight_focused()
   refresh_space_displays()
 end
 
--- Space creator handles workspace changes + display updates
-space_creator:subscribe({ "aerospace_workspace_change" }, function()
-  on_workspace_change()
+-- Refresh all workspace icons (for window_moved where source is unknown)
+local function refresh_all_visible()
+  for ws_id, _ in pairs(spaces) do
+    reload_workspace_icons(ws_id)
+  end
+  highlight_focused()
+  refresh_space_displays()
+end
+
+-- Event subscriptions
+space_creator:subscribe("aerospace_workspace_change", function(env)
+  on_workspace_change(env)
 end)
 
 space_creator:subscribe("display_change", function()
   refresh_space_displays()
 end)
 
--- Window open/close detection (kernel event, zero CPU)
 space_creator:subscribe("space_windows_change", function()
   refresh_all_focused()
 end)
 
--- App focus change also refreshes (catches most open/close scenarios)
 space_creator:subscribe("front_app_switched", function()
   refresh_all_focused()
 end)
 
--- Window moved between workspaces (from on-window-detected rules)
+-- Window moved: refresh all workspaces (source unknown, cache short-circuits unchanged)
 space_creator:subscribe("window_moved", function()
-  refresh_all_focused()
+  refresh_all_visible()
 end)
 
--- Highlight active workspace on init
+-- Init: highlight active workspace and set divider visibility
 highlight_focused()
+refresh_space_displays()

@@ -13,6 +13,7 @@ local apps = {
 for _, a in ipairs(apps) do
   sbar.add("item", "notif." .. a.name, {
     position = "right",
+    display = require("displays").lg,
     drawing = false,
     width = 0,
     padding_left = 0,
@@ -41,6 +42,7 @@ end
 -- Hidden trigger item
 local trigger = sbar.add("item", "notifications", {
   position = "right",
+  display = require("displays").lg,
   updates = "on",
   update_freq = 5,
   width = 0,

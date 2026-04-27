@@ -16,9 +16,18 @@ local function popup_off()
   apple:set({ popup = { drawing = false } })
 end
 
-apple:subscribe("mouse.entered", function() apple:set({ popup = { drawing = true } }) end)
+apple:subscribe("mouse.entered", function()
+  sbar.exec("sketchybar --trigger close_popups OPENER=apple")
+  apple:set({ popup = { drawing = true } })
+end)
+apple:subscribe("close_popups", function(env)
+  if env.OPENER ~= "apple" then popup_off() end
+end)
 apple:subscribe("mouse.exited.global", function() popup_off() end)
-apple:subscribe("mouse.clicked", function() apple:set({ popup = { drawing = "toggle" } }) end)
+apple:subscribe("mouse.clicked", function()
+  sbar.exec("sketchybar --trigger close_popups OPENER=apple")
+  apple:set({ popup = { drawing = "toggle" } })
+end)
 
 -- Popup items
 sbar.add("item", "apple.prefs", {

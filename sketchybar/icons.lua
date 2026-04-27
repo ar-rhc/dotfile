@@ -8,6 +8,7 @@ return {
   bell = "􀋚",
   bell_dot = "􀝗",
   menu = "􀌜",
+  claude = "􀙛",
 
   -- Volume
   volume = {
@@ -70,4 +71,7 @@ return {
 
   -- Trash
   trash = "􀈑",
+
+  -- NASA
+  nasa = "􀆹",
 }

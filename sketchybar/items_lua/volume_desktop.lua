@@ -4,6 +4,7 @@ local settings = require("settings")
 
 local volume = sbar.add("item", "volume_desktop", {
   position = "right",
+  display = require("displays").lg,
   icon = {
     string = icons.volume._100,
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
@@ -54,33 +55,59 @@ local function update_icon()
   end)
 end
 
--- Hover: show slider after 0.5s delay
-local hover_timer = nil
+-- Use generation counters to invalidate pending delays (sbar.delay is not cancellable)
+local hover_gen = 0
+local hide_gen = 0
+local timeout_gen = 0
+local slider_visible = false
+
+local function hide_slider()
+  hide_gen = hide_gen + 1
+  slider_visible = false
+  sbar.animate("tanh", 30, function()
+    slider:set({ width = 0, slider = { width = 0 } })
+  end)
+end
+
+local function reset_hide_timeout()
+  timeout_gen = timeout_gen + 1
+  local gen = timeout_gen
+  sbar.delay(30, function()
+    if gen == timeout_gen then hide_slider() end
+  end)
+end
+
+-- Hover: show slider after 1s delay
 volume:subscribe("mouse.entered", function(env)
   update_icon()
-  hover_timer = sbar.delay(0.5, function()
+  hover_gen = hover_gen + 1
+  local gen = hover_gen
+  sbar.delay(1, function()
+    if gen ~= hover_gen then return end
     sbar.exec("betterdisplaycli get -n=LG --volume", function(vol)
       vol = vol:gsub("%s+", "")
       local pct = math.floor((tonumber(vol) or 0) * 100)
+      slider_visible = true
       slider:set({ width = "dynamic", slider = { percentage = pct, width = 100 } })
+      reset_hide_timeout()
     end)
   end)
 end)
 
 volume:subscribe("mouse.exited.global", function(env)
-  sbar.animate("tanh", 30, function()
-    slider:set({ width = 0, slider = { width = 0 } })
-  end)
+  hover_gen = hover_gen + 1
+  hide_slider()
 end)
 
 slider:subscribe("mouse.entered", function()
-  slider:set({ width = "dynamic", slider = { width = 100 } })
+  if not slider_visible then return end
+  hover_gen = hover_gen + 1
+  hide_gen = hide_gen + 1
+  reset_hide_timeout()
 end)
 
 slider:subscribe("mouse.exited.global", function()
-  sbar.animate("tanh", 30, function()
-    slider:set({ width = 0, slider = { width = 0 } })
-  end)
+  hide_slider()
 end)
 
 -- Slider drag: set volume

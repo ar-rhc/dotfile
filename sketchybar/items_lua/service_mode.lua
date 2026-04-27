@@ -98,33 +98,39 @@ local HIDE_ITEMS = {
   "menu_trigger", "space_creator", "app_list", "timer", "volume_desktop",
   "volume_desktop_slider", "notifications", "input_source", "trash",
   "next_event", "wifi", "ram", "cpu.percent", "cpu.top", "weather", "music", "focus",
+  "nasa_gallery", "launchd", "claude_projects", "front_app",
 }
 
-local function hide_items()
-  for _, name in ipairs(HIDE_ITEMS) do
-    sbar.set(name, { drawing = false })
+-- Build space/divider/notif item names from settings (no async Python needed)
+local all_space_names = {}
+for _, ws_list in pairs(settings.aerospace.monitors) do
+  for _, ws in ipairs(ws_list) do
+    table.insert(all_space_names, "space." .. ws)
   end
-  -- Hide space and notif items dynamically
-  sbar.exec([[sketchybar --query bar | python3 -c "
-import sys, json, subprocess
-items = json.load(sys.stdin).get('items', [])
-for i in items:
-    if i.startswith('space.') or i.startswith('notif.'):
-        subprocess.run(['sketchybar', '--set', i, 'drawing=off'], capture_output=True)
-"]])
+end
+
+local sorted_groups = {}
+for m, _ in pairs(settings.aerospace.monitors) do table.insert(sorted_groups, m) end
+table.sort(sorted_groups)
+local divider_names = {}
+for i = 1, #sorted_groups - 1 do
+  table.insert(divider_names, "space_divider." .. sorted_groups[i] .. "_" .. sorted_groups[i + 1])
+end
+
+local notif_names = { "notif.mail", "notif.messages", "notif.whatsapp", "notif.wechat" }
+
+local function hide_items()
+  for _, name in ipairs(HIDE_ITEMS) do sbar.set(name, { drawing = false }) end
+  for _, name in ipairs(all_space_names) do sbar.set(name, { drawing = false }) end
+  for _, name in ipairs(divider_names) do sbar.set(name, { drawing = false }) end
+  for _, name in ipairs(notif_names) do sbar.set(name, { drawing = false }) end
 end
 
 local function show_items()
-  for _, name in ipairs(HIDE_ITEMS) do
-    sbar.set(name, { drawing = true })
-  end
-  sbar.exec([[sketchybar --query bar | python3 -c "
-import sys, json, subprocess
-items = json.load(sys.stdin).get('items', [])
-for i in items:
-    if i.startswith('space.'):
-        subprocess.run(['sketchybar', '--set', i, 'drawing=on'], capture_output=True)
-"]])
+  for _, name in ipairs(HIDE_ITEMS) do sbar.set(name, { drawing = true }) end
+  for _, name in ipairs(all_space_names) do sbar.set(name, { drawing = true }) end
+  for _, name in ipairs(divider_names) do sbar.set(name, { drawing = true }) end
+  -- notif items auto-recover on next update cycle (5s)
 end
 
 local function show_cheat(items)

@@ -79,7 +79,11 @@ end
 wifi:subscribe({ "routine", "forced", "wifi_change", "system_woke" }, function() update_wifi() end)
 
 -- Popup: show details on hover
+wifi:subscribe("close_popups", function(env)
+  if env.OPENER ~= "wifi" then wifi:set({ popup = { drawing = false } }) end
+end)
 wifi:subscribe("mouse.entered", function()
+  sbar.exec("sketchybar --trigger close_popups OPENER=wifi")
   wifi:set({ popup = { drawing = true } })
   sbar.exec("ipconfig getsummary en0 2>/dev/null | awk -F ' SSID : ' '/ SSID : / {print $2}'", function(r)
     popup_ssid:set({ label = { string = r:gsub("%s+$", "") } })

@@ -27,14 +27,16 @@ local SYSTEM_PROCS = {
 
 local ram = sbar.add("item", "ram", {
   position = "right",
+  display = require("displays").lg,
   icon = {
     string = "􀫦",
     color = colors.green,
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
   },
   label = {
-    font = { family = settings.font.numbers, style = "Regular", size = 12.0 },
+    font = { family = settings.font.numbers, style = "Regular", size = 10.0 },
     color = colors.white,
+    y_offset = 1,
   },
   padding_left = 3,
   padding_right = 3,
@@ -139,8 +141,13 @@ ram:subscribe({ "routine", "forced" }, function()
     elseif pct > 50 then color = colors.yellow
     else color = colors.green end
 
+    -- Progress bar: 8 filled/empty blocks
+    local bar_len = 8
+    local filled = math.floor(pct / 100 * bar_len + 0.5)
+    local bar = string.rep("█", filled) .. string.rep("░", bar_len - filled)
+
     ram:set({
-      label = { string = display },
+      label = { string = bar, color = color },
       icon = { color = color },
     })
   end)
@@ -169,10 +176,14 @@ ram:subscribe("mouse.clicked", function()
       end
       i = i + 1
     end
+    sbar.exec("sketchybar --trigger close_popups OPENER=ram")
     ram:set({ popup = { drawing = "toggle" } })
   end)
 end)
 
+ram:subscribe("close_popups", function(env)
+  if env.OPENER ~= "ram" then ram:set({ popup = { drawing = false } }) end
+end)
 ram:subscribe("mouse.exited.global", function()
   ram:set({ popup = { drawing = false } })
 end)

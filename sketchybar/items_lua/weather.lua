@@ -109,7 +109,7 @@ local FORECAST_DAYS = 3  -- free tier max
 
 local weather = sbar.add("item", "weather", {
   position = "right",
-  display = 2,
+  display = require("displays").lg,
   icon = {
     string = "󰖐",
     font = { family = "Hack Nerd Font", style = "Regular", size = 13.0 },
@@ -202,10 +202,14 @@ weather:subscribe("mouse.clicked", function(env)
   if env.BUTTON == "right" then
     sbar.exec("open -a Weather")
   else
+    sbar.exec("sketchybar --trigger close_popups OPENER=weather")
     weather:set({ popup = { drawing = "toggle" } })
   end
 end)
 
+weather:subscribe("close_popups", function(env)
+  if env.OPENER ~= "weather" then weather:set({ popup = { drawing = false } }) end
+end)
 weather:subscribe("mouse.exited.global", function()
   weather:set({ popup = { drawing = false } })
 end)

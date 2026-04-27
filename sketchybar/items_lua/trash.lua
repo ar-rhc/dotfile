@@ -2,6 +2,7 @@ local icons = require("icons")
 
 local trash = sbar.add("item", "trash", {
   position = "right",
+  display = require("displays").lg,
   icon = { string = icons.trash, color = 0xffff9966 },
   label = { string = "", padding_left = 0 },
   padding_left = 3,

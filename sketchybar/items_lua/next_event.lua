@@ -19,7 +19,7 @@ local next_event = sbar.add("item", "next_event", {
   icon = { string = "􀧞" },
   padding_left = 3,
   padding_right = 3,
-  display = 2,
+  display = require("displays").lg,
   update_freq = 60,
   updates = "on",
   popup = { height = 30, background = { border_width = 0 } },
@@ -191,25 +191,42 @@ next_event:subscribe({ "routine", "forced", "system_woke" }, function()
   update_event()
 end)
 
--- Hover: expand to show full title
+-- Hover: expand to show full title after 1s delay
+local expand_gen = 0
+local expanded = false
+
 next_event:subscribe("mouse.entered", function()
-  if last_full_label and last_full_label ~= "" then
-    next_event:set({ label = { string = last_full_label } })
-  end
+  expand_gen = expand_gen + 1
+  local gen = expand_gen
+  sbar.delay(1, function()
+    if gen ~= expand_gen then return end
+    if last_full_label and last_full_label ~= "" then
+      expanded = true
+      next_event:set({ label = { string = last_full_label } })
+    end
+  end)
 end)
 
 next_event:subscribe("mouse.exited", function()
-  if last_short_label and last_short_label ~= "" then
-    next_event:set({ label = { string = last_short_label } })
+  expand_gen = expand_gen + 1
+  if expanded then
+    expanded = false
+    if last_short_label and last_short_label ~= "" then
+      next_event:set({ label = { string = last_short_label } })
+    end
   end
 end)
 
 -- Click: show today's events, Cmd+click opens Calendar
+next_event:subscribe("close_popups", function(env)
+  if env.OPENER ~= "next_event" then next_event:set({ popup = { drawing = false } }) end
+end)
 next_event:subscribe("mouse.clicked", function(env)
   if env.MODIFIER == "cmd" then
     sbar.exec("open -a Calendar")
     return
   end
+  sbar.exec("sketchybar --trigger close_popups OPENER=next_event")
 
   -- Fetch all today's events for popup
   local cmd = 'icalBuddy -n -nc -ec "' .. EXCLUDE_CALENDARS .. '" -iep "datetime,title" -po "datetime,title" -ps "|^|" -tf "%H:%M" -df "%Y-%m-%d" -nrd -b "" -ea eventsToday+1 2>/dev/null'

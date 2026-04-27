@@ -74,9 +74,13 @@ music:subscribe("mouse.clicked", function(env)
 end)
 
 music:subscribe("mouse.entered", function()
+  sbar.exec("sketchybar --trigger close_popups OPENER=music")
   music:set({ popup = { drawing = true } })
 end)
 
+music:subscribe("close_popups", function(env)
+  if env.OPENER ~= "music" then music:set({ popup = { drawing = false } }) end
+end)
 music:subscribe("mouse.exited.global", function()
   music:set({ popup = { drawing = false } })
 end)
