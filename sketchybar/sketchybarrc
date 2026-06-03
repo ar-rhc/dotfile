@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$CONFIG_DIR/colors.sh" # Loads all defined colors
 source "$CONFIG_DIR/icons.sh" # Loads all defined icons
@@ -84,25 +84,20 @@ source "$ITEM_DIR/timer.sh"
 source "$ITEM_DIR/service_mode.sh"
 
 # Right
+export SHOWY_QUOTA_SKETCHYBAR_SIDE=right
+export SHOWY_QUOTA_DEGRADED_CLI=0
 #source "$ITEM_DIR/time_date.sh"
 source "$ITEM_DIR/calendar.sh"
+source "$ITEM_DIR/battery.sh"
 source "$ITEM_DIR/notifications.sh"
 source "$ITEM_DIR/input_source.sh"
 source "$ITEM_DIR/next_event.sh"
 
-
-
-#source "$ITEM_DIR/airpods_battery.sh"
-#source "$ITEM_DIR/battery.sh"
-#source "$ITEM_DIR/brew.sh"
-#source "$ITEM_DIR/github.sh"
 source "$ITEM_DIR/wifi.sh"
-#source "$ITEM_DIR/volume.sh"
-
-
-#source "$ITEM_DIR/cpu.sh"
 source "$ITEM_DIR/weather.sh"
 source "$ITEM_DIR/music.sh"
+
+source "$ITEM_DIR/showy_quota.sh"
 
 # Hotload disabled - using Hammerspoon pathwatcher to reload only on sketchybarrc changes
 # sketchybar --hotload on
