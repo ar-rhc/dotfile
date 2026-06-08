@@ -14,7 +14,7 @@ USE_CUSTOM_ORDER="custom"
 
 # Custom workspace order (only used if USE_CUSTOM_ORDER="custom")
 # Default order: alphabetical/numeric as returned by AeroSpace
-CUSTOM_WORKSPACE_ORDER="1 2 3 Q W E A S D Z X C M"
+CUSTOM_WORKSPACE_ORDER="1 Q A Z 2 W S X 3 E D C M"
 # ============================================================
 
 sketchybar --add event aerospace_workspace_change

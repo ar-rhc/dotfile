@@ -1,42 +1,43 @@
+
 #!/bin/sh
-
-source "$CONFIG_DIR/colors.sh"
-
 PERCENTAGE="$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)"
 CHARGING="$(pmset -g batt | grep 'AC Power')"
-
 if [ "$PERCENTAGE" = "" ]; then
   exit 0
 fi
 
-case ${PERCENTAGE} in
-  [8-9][0-9] | 100)
-    ICON="􀛨"
-    ICON_COLOR=$BATTERY_1
-    ;;
-  7[0-9])
-    ICON="􀺸"
-    ICON_COLOR=$BATTERY_2
-    ;;
-  [4-6][0-9])
-    ICON="􀺶"
-    ICON_COLOR=$BATTERY_3
-    ;;
-  [1-3][0-9])
-      ICON="􀛩"
-    ICON_COLOR=$BATTERY_4
-    ;;
-  [0-9])
-    ICON="􀛪"
-    ICON_COLOR=$BATTERY_5
-    ;;
-esac
+# Braille patterns grouped by number of dots (0-8 dots)
+dots_0=("⠀")
+dots_1=("⠁" "⠂" "⠄" "⠈" "⠐" "⠠" "⡀" "⢀")
+dots_2=("⠃" "⠅" "⠆" "⠉" "⠊" "⠌" "⠑" "⠒" "⠔" "⠘" "⠡" "⠢" "⠤" "⠨" "⠰" "⡁" "⡂" "⡄" "⡈" "⡐" "⡠" "⢁" "⢂" "⢄" "⢈" "⢐" "⢠" "⣀")
+dots_3=("⠇" "⠋" "⠍" "⠎" "⠓" "⠕" "⠖" "⠚" "⠜" "⠣" "⠥" "⠦" "⠩" "⠪" "⠬" "⠱" "⠲" "⠴" "⠸" "⡃" "⡅" "⡆" "⡉" "⡊" "⡌" "⡑" "⡒" "⡔" "⡘" "⡡" "⡢" "⡤" "⡨" "⡰" "⢃" "⢅" "⢆" "⢉" "⢊" "⢌" "⢑" "⢒" "⢔" "⢘" "⢡" "⢢" "⢤" "⢨" "⢰" "⣁" "⣂" "⣄" "⣈" "⣐" "⣠")
+dots_4=("⠏" "⠗" "⠛" "⠝" "⠞" "⠧" "⠫" "⠭" "⠮" "⠳" "⠵" "⠶" "⠹" "⠺" "⠼" "⡇" "⡋" "⡍" "⡎" "⡓" "⡕" "⡖" "⡚" "⡜" "⡣" "⡥" "⡦" "⡩" "⡪" "⡬" "⡱" "⡲" "⡴" "⡸" "⢇" "⢋" "⢍" "⢎" "⢓" "⢕" "⢖" "⢚" "⢜" "⢣" "⢥" "⢦" "⢩" "⢪" "⢬" "⢱" "⢲" "⢴" "⢸" "⣃" "⣅" "⣆" "⣉" "⣊" "⣌" "⣑" "⣒" "⣔" "⣘" "⣡" "⣢" "⣤" "⣨" "⣰")
+dots_5=("⠟" "⠯" "⠷" "⠻" "⠽" "⠾" "⡏" "⡗" "⡛" "⡝" "⡞" "⡧" "⡫" "⡭" "⡮" "⡳" "⡵" "⡶" "⡹" "⡺" "⡼" "⢏" "⢗" "⢛" "⢝" "⢞" "⢧" "⢫" "⢭" "⢮" "⢳" "⢵" "⢶" "⢹" "⢺" "⢼" "⣇" "⣋" "⣍" "⣎" "⣓" "⣕" "⣖" "⣚" "⣜" "⣣" "⣥" "⣦" "⣩" "⣪" "⣬" "⣱" "⣲" "⣴" "⣸")
+dots_6=("⠿" "⡟" "⡯" "⡷" "⡻" "⡽" "⡾" "⢟" "⢯" "⢷" "⢻" "⢽" "⢾" "⣏" "⣗" "⣛" "⣝" "⣞" "⣧" "⣫" "⣭" "⣮" "⣳" "⣵" "⣶" "⣹" "⣺" "⣼")
+dots_7=("⡿" "⢿" "⣟" "⣯" "⣷" "⣻" "⣽" "⣾")
+dots_8=("⣿")
+
+# Create array of arrays
+all_dots=(dots_0 dots_1 dots_2 dots_3 dots_4 dots_5 dots_6 dots_7 dots_8)
+
+# Calculate which dot level based on percentage (0-8)
+index=$(( (PERCENTAGE * 8) / 100 ))
+[ "$index" -gt 8 ] && index=8
+
+# Get the appropriate dots array name
+dots_array_name=${all_dots[$index]}
+
+# Use eval to get the array and pick a random symbol
+eval "dots_array=(\"\${${dots_array_name}[@]}\")"
+array_size=${#dots_array[@]}
+random_index=$(( RANDOM % array_size ))
+symbol=${dots_array[$random_index]}
 
 if [[ "$CHARGING" != "" ]]; then
-  ICON="􀢋"
-  ICON_COLOR=$YELLOW
+  LABEL="${PERCENTAGE}*"
+else
+  LABEL="${PERCENTAGE}%"
 fi
 
-# The item invoking this script (name $NAME) will get its icon and label
-# updated with the current battery status
-sketchybar --set "$NAME" icon="$ICON" label="${PERCENTAGE}%" icon.color=${ICON_COLOR}
+LABEL=$(printf "%4s" "$LABEL")
+sketchybar --set "$NAME" icon="$symbol" label="$LABEL"

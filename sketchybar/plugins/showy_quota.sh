@@ -1,0 +1,1 @@
+/Users/alex/projects/showy-quota/adapters/sketchybar/plugins/showy_quota.sh

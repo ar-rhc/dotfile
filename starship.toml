@@ -1,0 +1,41 @@
+# Final Tightened Prompt
+# Removing the double-space after the prompt symbol
+
+format = "$username$hostname $directory $character"
+
+[username]
+show_always = true
+style_user = "bold yellow"
+format = "[$user]($style)"
+disabled = false
+
+[hostname]
+ssh_only = false
+style = "bold green"
+format = "[@$hostname]($style)"
+disabled = false
+
+[directory]
+style = "bold cyan"
+truncation_length = 3
+truncate_to_repo = false
+format = "[$path]($style)"
+
+[character]
+# Using the default format which adds exactly one space after the symbol
+success_symbol = '[\$](bold green)'
+error_symbol = '[\$](bold red)'
+
+# --- Disabled Modules ---
+[git_branch]
+disabled = true
+[git_status]
+disabled = true
+[nodejs]
+disabled = true
+[gcloud]
+disabled = true
+[package]
+disabled = true
+[python]
+disabled = true

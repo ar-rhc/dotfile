@@ -23,8 +23,11 @@ sketchybar --add event reset_timer
  preset1=(label="3 min"  click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 180")
  preset2=(label="5 min"  click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 300")
  preset3=(label="10 min" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 600")
- preset4=(label="20 min" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 1200")
- preset5=(label="1 hour" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 3600")
+ preset4=(label="15 min" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 900")
+ preset5=(label="20 min" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 1200")
+ preset6=(label="30 min" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 1800")
+ preset7=(label="45 min" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 2700")
+ preset8=(label="1 hour" click_script="sketchybar --set timer popup.drawing=toggle; python3 $PLUGIN_DIR/timer.py 3600")
 
 sketchybar --add item timer left \
            --set timer "${timer[@]}" \
@@ -40,4 +43,10 @@ sketchybar --add item timer left \
            --add item timer.preset4 popup.timer \
            --set timer.preset4 "${preset4[@]}" \
            --add item timer.preset5 popup.timer \
-           --set timer.preset5 "${preset5[@]}"
+           --set timer.preset5 "${preset5[@]}" \
+           --add item timer.preset6 popup.timer \
+           --set timer.preset6 "${preset6[@]}" \
+           --add item timer.preset7 popup.timer \
+           --set timer.preset7 "${preset7[@]}" \
+           --add item timer.preset8 popup.timer \
+           --set timer.preset8 "${preset8[@]}"
