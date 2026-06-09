@@ -221,7 +221,7 @@ alt-shift-m = ['move-node-to-workspace M', 'workspace M']
 
 # Focus/switch to workspace: alt-ctrl-shift-<space name>
 alt-ctrl-shift-1 = 'workspace 1'
-alt-ctrl-shift-q = 'workspace Q'
+alt-ctrl-shift-q = ['workspace Q', 'exec-and-forget open -a Messages', 'exec-and-forget open -a WeChat']
 alt-ctrl-shift-a = 'workspace A'
 alt-ctrl-shift-z = 'workspace Z'
 alt-ctrl-shift-2 = 'workspace 2'
@@ -319,8 +319,13 @@ c = [
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
     'mode main'
 ]
+d = [
+    'exec-and-forget open /Volumes/Nvme/Downloads',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
 f = [
-    'exec-and-forget open -a Finder',
+    'exec-and-forget osascript -e "tell application \"Finder\" to activate"',
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
     'mode main'
 ]
@@ -479,11 +484,11 @@ run = ['move-node-to-workspace M', 'workspace M', 'exec-and-forget /opt/homebrew
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
 if.window-title-regex-substring = 'Weixin'
-run = ['move-node-to-workspace Q', 'move down', 'workspace Q', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace Q', 'workspace Q', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.MobileSMS'
-run = ['move-node-to-workspace Q', 'move down', 'workspace Q', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace Q', 'workspace Q', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
@@ -571,4 +576,8 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.Excel'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.valvesoftware.steam.helper'
 run = ['layout floating']
