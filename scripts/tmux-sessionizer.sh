@@ -1,32 +1,38 @@
 #!/bin/bash
 
-# Tmux Sessionizer
-# Quickly create or switch to sessions based on project folders
+# Improved Tmux Sessionizer
+# ------------------------------------------------------------------------------
 
-# 1. Define your project paths
-# We include the parent folders and their immediate subdirectories
-search_paths="~/dotfiles /Users/alex/ARfiles /Users/alex/ARfiles/Obsidian/Obsidian-Git"
+# 1. Define and expand paths
+# Using an array for cleaner path management
+paths=(
+    "$HOME/dotfiles"
+    "/Users/alex/ARfiles"
+    "/Users/alex/ARfiles/Obsidian/Obsidian-Git"
+)
 
-# Use 'find' on all paths, allowing the parents to show up as well
-selected=$(find $(eval echo $search_paths) -maxdepth 1 -type d 2>/dev/null | /opt/homebrew/bin/fzf --reverse --header 'Create/Switch Session')
+# 2. Use find to collect directories and pipe to FZF
+# We filter for directories (-type d) and limit depth
+selected=$(find "${paths[@]}" -maxdepth 1 -type d 2>/dev/null | /opt/homebrew/bin/fzf --reverse --header 'Select Folder to Create/Switch Session')
 
-# If user cancels (ESC), exit
-if [[ -z $selected ]]; then
+# Exit if nothing was selected (ESC or empty)
+if [[ -z "$selected" ]]; then
     exit 0
 fi
 
-# 2. Get the name for the session (basename of the folder)
+# 3. Clean up the session name
+# basename gets the folder name, tr replaces dots with underscores
 selected_name=$(basename "$selected" | tr . _)
-tmux_running=$(pgrep tmux)
 
-# 3. Handle session creation and switching
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s $selected_name -c $selected
-    exit 0
+# 4. Create session if it doesn't exist
+if ! tmux has-session -t "$selected_name" 2>/dev/null; then
+    tmux new-session -ds "$selected_name" -c "$selected"
 fi
 
-if ! tmux has-session -t=$selected_name 2> /dev/null; then
-    tmux new-session -ds $selected_name -c $selected
+# 5. Switch to the session
+# Logic: If we are already in tmux, switch client. If not, attach.
+if [[ -n "$TMUX" ]]; then
+    tmux switch-client -t "$selected_name"
+else
+    tmux attach-session -t "$selected_name"
 fi
-
-tmux switch-client -t $selected_name
