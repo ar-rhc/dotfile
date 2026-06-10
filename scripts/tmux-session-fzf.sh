@@ -4,9 +4,9 @@
 # ------------------------------------------------------------------------------
 
 # 1. Get session names and format them as "[Name]    (n)"
-# Using a fixed width of 20 chars for the name
+# Using a fixed width of 40 chars for the name to simulate "tab" spacing
 result=$(tmux list-sessions -F '#S' 2>/dev/null | \
-    awk '{printf "%-20s (%d)\n", $0, NR}' | \
+    awk '{printf "%-40s (%d)\n", $0, NR}' | \
     fzf --reverse --expect=ctrl-r,ctrl-x \
         --header 'R: Rename | X: Kill' \
         --preview 'tmux list-windows -t $(echo {} | sed "s/ *([0-9]*)$//") -F " #I: #W"' \
@@ -23,24 +23,33 @@ selected=$(echo "$selected_line" | sed 's/ *([0-9]*)$//')
 case "$key" in
     ctrl-r)
         if [[ -n "$selected" ]]; then
+            # Prompt inside the popup
             printf "\033[33mNew name for $selected: \033[0m"
             read new_name < /dev/tty
-            [[ -n "$new_name" ]] && tmux rename-session -t "$selected" "$new_name"
+            
+            if [[ -n "$new_name" ]]; then
+                tmux rename-session -t "$selected" "$new_name"
+            fi
+            # Restart the script to refresh the list
             exec bash "$0"
         fi
         ;;
     ctrl-x)
         if [[ -n "$selected" ]]; then
+            # Prompt for confirmation inside the popup
             printf "\033[31mKill session '$selected'? (y/n): \033[0m"
             read -n 1 confirm < /dev/tty
             echo
             if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
                 tmux kill-session -t "$selected"
             fi
+            # Restart the script to refresh the list
             exec bash "$0"
         fi
         ;;
-    "")
-        [[ -n "$selected" ]] && tmux switch-client -t "$selected"
+    "") # Enter pressed (Switch)
+        if [[ -n "$selected" ]]; then
+            tmux switch-client -t "$selected"
+        fi
         ;;
 esac
