@@ -4,9 +4,9 @@
 # ------------------------------------------------------------------------------
 
 # 1. Get session names and format them as "[Name]    (n)"
-# Using a fixed width of 40 chars for the name to simulate "tab" spacing
+# Using a fixed width of 25 chars for the name to fit narrower popup
 result=$(tmux list-sessions -F '#S' 2>/dev/null | \
-    awk '{printf "%-40s (%d)\n", $0, NR}' | \
+    awk '{printf "%-25s (%d)\n", $0, NR}' | \
     fzf --reverse --expect=ctrl-r,ctrl-x \
         --header 'R: Rename | X: Kill' \
         --preview 'tmux list-windows -t $(echo {} | sed "s/ *([0-9]*)$//") -F " #I: #W"' \
