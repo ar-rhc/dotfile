@@ -2,7 +2,7 @@
 set-environment -g REMOTE_SELF kawakawa
 
 # Quick action menu — script handles conditional remote section
-bind m run-shell "bash ~/dotfiles/scripts/tmux-menu.sh"
+bind m run-shell "bash ~/dotfiles/scripts/tmux/tmux-menu.sh"
 
 # Remote session picker
-bind K display-popup -w 40 -h 15 -T " Remote Sessions " -E "bash ~/dotfiles/scripts/remote-sessions.sh"
+bind K display-popup -w 40 -h 15 -T " Remote Sessions " -E "bash ~/dotfiles/scripts/tmux/remote-sessions.sh"
