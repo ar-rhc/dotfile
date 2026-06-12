@@ -1,7 +1,7 @@
 # Final Tightened Prompt
 # Removing the double-space after the prompt symbol
 
-format = "$username$hostname $directory $character"
+format = "$env_var$username$hostname $directory $character"
 
 [username]
 show_always = true
@@ -25,6 +25,11 @@ format = "[$path]($style)"
 # Using the default format which adds exactly one space after the symbol
 success_symbol = '[\$](bold green)'
 error_symbol = '[\$](bold red)'
+
+[env_var.SSH_CLIENT]
+variable = "SSH_CLIENT"
+format = "[[SSH]](bold yellow) "
+disabled = false
 
 # --- Disabled Modules ---
 [git_branch]
