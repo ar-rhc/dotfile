@@ -28,6 +28,6 @@ case "$key" in
         fi
         ;;
     "")
-        [[ -n "$selected" ]] && tmux respawn-pane -k -t "${PARENT_PANE:-.}" "ssh -t kawakawa '$TMUX_REMOTE attach -t $selected'"
+        [[ -n "$selected" ]] && tmux new-window -n kawakawa "ssh -t kawakawa '$TMUX_REMOTE attach -t $selected'"
         ;;
 esac

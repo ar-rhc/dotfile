@@ -23,7 +23,7 @@ REMOTE_ITEMS=(
     ""                        ""  ""
     "── Kawakawa ──"          ""  ""
     "Switch Session"          "w" "display-popup -w 50% -h 40% -E 'PARENT_PANE=#{pane_id} bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
-    "Exit Remote Tmux"        "d" "respawn-pane -k"
+    "Exit Remote Tmux"        "d" "send-keys C-q d"
 )
 
 ITEMS=("${BASE_ITEMS[@]}")
