@@ -21,6 +21,9 @@ function __icon_map() {
    "AFFiNE")
         icon_result=":affine:"
         ;;
+   "Affinity")
+        icon_result=":affinity:"
+        ;;
    "Affinity Designer")
         icon_result=":affinity_designer:"
         ;;
@@ -89,6 +92,9 @@ function __icon_map() {
         ;;
    "Arduino" | "Arduino IDE")
         icon_result=":arduino:"
+        ;;
+   "Aseprite")
+        icon_result=":aseprite:"
         ;;
    "Atom")
         icon_result=":atom:"
@@ -903,6 +909,9 @@ function __icon_map() {
    "Proton VPN" | "ProtonVPN")
         icon_result=":proton_vpn:"
         ;;
+   "Proxyman")
+        icon_result=":proxyman:"
+        ;;
    "PrusaSlicer" | "SuperSlicer")
         icon_result=":prusaslicer:"
         ;;
@@ -911,6 +920,9 @@ function __icon_map() {
         ;;
    "qBittorrent")
         icon_result=":qbittorrent:"
+        ;;
+   "QGIS")
+        icon_result=":qgis:"
         ;;
    "QLMarkdown")
         icon_result=":qlmarkdown:"
@@ -968,6 +980,9 @@ function __icon_map() {
         ;;
    "Royal TSX")
         icon_result=":royaltsx:"
+        ;;
+   "RStudio")
+        icon_result=":rstudio:"
         ;;
    "RustDesk")
         icon_result=":rustdesk:"
@@ -1065,6 +1080,9 @@ function __icon_map() {
    "TablePlus")
         icon_result=":tableplus:"
         ;;
+   "Tailscale")
+        icon_result=":tailscale:"
+        ;;
    "Tana")
         icon_result=":tana:"
         ;;
@@ -1100,6 +1118,9 @@ function __icon_map() {
         ;;
    "Timery")
         icon_result=":timery:"
+        ;;
+   "Timing")
+        icon_result=":timingapp:"
         ;;
    "Tiny RDM")
         icon_result=":tinyrdm:"
@@ -1202,6 +1223,9 @@ function __icon_map() {
         ;;
    "Xcode")
         icon_result=":xcode:"
+        ;;
+   "Yaak")
+        icon_result=":yaak:"
         ;;
    "Yandex Browser"  | "Yandex Browser" | "Yandex")
         icon_result=":yandex_browser:"

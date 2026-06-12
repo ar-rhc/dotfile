@@ -22,8 +22,9 @@ controller.startListener('127.0.0.1', 12345) -- Start the listener
 -- local hybrid_controller = require("modules.hybrid_controller")
 
 -- Load and start the device watchers (Huion Tablet and DS4 Controller)
-local deviceWatchers = require("modules.device_watchers")
-deviceWatchers:start()
+-- Wrapped in pcall so machines without this module (e.g. MacBook) skip it silently
+local ok, deviceWatchers = pcall(require, "modules.device_watchers")
+if ok then deviceWatchers:start() end
 
 -- Load and start the advanced window management module
 -- local windowManager = require("modules.window_management")
@@ -31,6 +32,10 @@ deviceWatchers:start()
 
 -- Load utilities (they don't need to be started, just loaded for console use)
 require("modules.utils")
+
+-- Load and start the auto-dimming module (disabled – was dimming second monitor)
+-- local autoDimming = require("modules.auto_dimming")
+-- autoDimming:start()
 
 print("✅ All Hammerspoon modules loaded successfully.") 
 
@@ -52,23 +57,23 @@ end)
 ----------------------------------------
 -- 1. Configuration Paths
 local home = os.getenv("HOME")
-local yabaiConfig = home .. "/.config/yabai/yabairc" -- Adjust if yours is in ~/.yabairc
-local skhdConfig = home .. "/.config/skhd/skhdrc"   -- Adjust if yours is in ~/.skhdrc
+-- local yabaiConfig = home .. "/.config/yabai/yabairc" -- Adjust if yours is in ~/.yabairc
+-- local skhdConfig = home .. "/.config/skhd/skhdrc"   -- Adjust if yours is in ~/.skhdrc
 local barsConfig = home .. "/.config/sketchybar/sketchybarrc"   -- Adjust if yours is in ~/.sketchybarrc
 local bordersConfig = home .. "/.config/borders/bordersrc"   -- Adjust if yours is in ~/.bordersrc
 
 -- 2. Define the Reload Function
-function reloadYabai()
-    -- Restart Yabai
-    hs.execute("/opt/homebrew/bin/yabai --restart-service", true)
-    hs.alert.show("yabai reloaded")
-end
+-- function reloadYabai()
+--     -- Restart Yabai
+--     hs.execute("/opt/homebrew/bin/yabai --restart-service", true)
+--     hs.alert.show("yabai reloaded")
+-- end
 
-function reloadSkhd()
-    -- Restart Skhd
-    hs.execute("skhd --restart-service", true)
-    hs.alert.show("skhd reloaded")
-end
+-- function reloadSkhd()
+--     -- Restart Skhd
+--     hs.execute("skhd --restart-service", true)
+--     hs.alert.show("skhd reloaded")
+-- end
 
 function reloadBars()
     -- Restart Bars

@@ -1,0 +1,46 @@
+local colors = require("colors")
+local settings = require("settings")
+
+local calendar_icons = {
+  "􃌦","􃌧","􃌨","􃌩","􃌪","􃌫","􃌬","􃌭","􃌮","􃌯",
+  "􃌰","􃌱","􃌲","􃌳","􃌴","􃌵","􃌶","􃌷","􃌸","􃌹",
+  "􃌺","􃌻","􃌼","􃌽","􃌾","􃌿","􃍀","􃍁","􃍂","􃍃","􃍄",
+}
+
+-- Zen mode: toggle non-essential items
+local zen_active = false
+local zen_items = {
+  "wifi", "front_app", "volume_desktop", "next_event",
+  "ram", "weather", "input_source", "trash", "focus",
+}
+
+local function zen_toggle()
+  zen_active = not zen_active
+  for _, name in ipairs(zen_items) do
+    sbar.exec("sketchybar --set " .. name .. " drawing=" .. (zen_active and "off" or "on"))
+  end
+end
+
+local cal = sbar.add("item", "calendar", {
+  position = "right",
+  icon = {
+    font = { family = settings.font.text, style = "Black", size = 18.0 },
+    padding_right = 0,
+  },
+  label = { align = "right" },
+  update_freq = 60,
+  updates = "on",
+})
+
+cal:subscribe({ "routine", "forced", "system_woke" }, function(env)
+  local day = tonumber(os.date("%d"))
+  local icon = calendar_icons[day] or "􀉉"
+  cal:set({
+    icon = { string = icon },
+    label = { string = os.date("%a %d %b - %H:%M") },
+  })
+end)
+
+cal:subscribe("mouse.clicked", function()
+  zen_toggle()
+end)
