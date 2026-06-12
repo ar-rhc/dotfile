@@ -12,17 +12,18 @@ BASE_ITEMS=(
     ""                   ""  ""
     "Rename Pane"        "r" "command-prompt -p 'New pane title:' -I '#{pane_title}' 'select-pane -T %%'"
     "Rename Window"      "R" "command-prompt -I '#W' 'rename-window %%'"
-    "Session Switcher"   "s" "display-popup -w 30% -h 35% -E 'bash ~/dotfiles/scripts/tmux-session-fzf.sh'"
+    "Session Switcher"   "s" "display-popup -w 30% -h 35% -E 'bash ~/dotfiles/scripts/tmux/tmux-session-fzf.sh'"
+    "Move Window"        "." "display-popup -w 30% -h 35% -E 'bash ~/dotfiles/scripts/tmux/tmux-move-window.sh'"
     "List Shortcuts"     "?" "list-keys"
     ""                   ""  ""
     "── Remote ──"       ""  ""
-    "Remote Sessions"    "k" "display-popup -w 40 -h 15 -T ' Remote Sessions ' -E 'bash ~/dotfiles/scripts/remote-sessions.sh'"
+    "Remote Sessions"    "k" "display-popup -w 40 -h 15 -T ' Remote Sessions ' -E 'bash ~/dotfiles/scripts/tmux/remote-sessions.sh'"
 )
 
 REMOTE_ITEMS=(
     ""                   ""  ""
     "── Remote ──"       ""  ""
-    "Remote Sessions"    "w" "display-popup -w 40 -h 15 -T ' Remote Sessions ' -E 'bash ~/dotfiles/scripts/remote-sessions.sh'"
+    "Remote Sessions"    "w" "display-popup -w 40 -h 15 -T ' Remote Sessions ' -E 'bash ~/dotfiles/scripts/tmux/remote-sessions.sh'"
     "Exit Remote Tmux"   "d" "send-keys C-q C-q d"
 )
 
