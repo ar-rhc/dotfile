@@ -20,7 +20,6 @@ REMOTE_ITEMS=(
     ""                 ""  ""
     "── Kawakawa ──"   ""  ""
     "Switch Session"   "k" "display-popup -w 50% -h 40% -E 'bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
-    "List Sessions"    "l" "display-popup -w 40% -h 20% \"ssh kawakawa '/opt/homebrew/bin/tmux ls 2>/dev/null || echo no sessions'\""
     "Close Remote"     "d" "kill-window"
 )
 
