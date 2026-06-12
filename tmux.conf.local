@@ -1,0 +1,8 @@
+# Identity of this machine — used by remote-sessions.sh to hide local device
+set-environment -g REMOTE_SELF kawakawa
+
+# Quick action menu — script handles conditional remote section
+bind m run-shell "bash ~/dotfiles/scripts/tmux-menu.sh"
+
+# Remote session picker
+bind K display-popup -w 40 -h 15 -T " Remote Sessions " -E "bash ~/dotfiles/scripts/remote-sessions.sh"
