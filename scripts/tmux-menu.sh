@@ -4,23 +4,24 @@
 PANE_CMD=$(tmux display-message -p '#{pane_current_command}')
 
 BASE_ITEMS=(
-    "Horizontal Split" "|" "split-window -h -c '#{pane_current_path}'"
-    "Vertical Split"   "-" "split-window -v -c '#{pane_current_path}'"
-    ""                 ""  ""
-    "Zoom Pane"        "z" "resize-pane -Z"
-    "Kill Pane"        "x" "kill-pane"
-    ""                 ""  ""
-    "Rename Pane"      "r" "command-prompt -p 'New pane title:' -I '#{pane_title}' 'select-pane -T %%'"
-    "Rename Window"    "R" "command-prompt -I '#W' 'rename-window %%'"
-    "Session Switcher" "s" "display-popup -w 30% -h 35% -E 'bash ~/dotfiles/scripts/tmux-session-fzf.sh'"
-    "List Shortcuts"   "?" "list-keys"
+    "Horizontal Split"   "|" "split-window -h -c '#{pane_current_path}'"
+    "Vertical Split"     "-" "split-window -v -c '#{pane_current_path}'"
+    ""                   ""  ""
+    "Zoom Pane"          "z" "resize-pane -Z"
+    "Kill Pane"          "x" "kill-pane"
+    ""                   ""  ""
+    "Rename Pane"        "r" "command-prompt -p 'New pane title:' -I '#{pane_title}' 'select-pane -T %%'"
+    "Rename Window"      "R" "command-prompt -I '#W' 'rename-window %%'"
+    "Session Switcher"   "s" "display-popup -w 30% -h 35% -E 'bash ~/dotfiles/scripts/tmux-session-fzf.sh'"
+    "Kawakawa Sessions"  "k" "display-popup -w 50% -h 40% -E 'PARENT_PANE=#{pane_id} bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
+    "List Shortcuts"     "?" "list-keys"
 )
 
 REMOTE_ITEMS=(
-    ""                 ""  ""
-    "── Kawakawa ──"   ""  ""
-    "Switch Session"   "k" "display-popup -w 50% -h 40% -E 'PARENT_PANE=#{pane_id} bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
-    "Close Remote"     "d" "kill-window"
+    ""                        ""  ""
+    "── Kawakawa ──"          ""  ""
+    "Switch Session"          "w" "display-popup -w 50% -h 40% -E 'PARENT_PANE=#{pane_id} bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
+    "Exit Remote Tmux"        "d" "respawn-pane -k"
 )
 
 ITEMS=("${BASE_ITEMS[@]}")
