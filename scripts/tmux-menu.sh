@@ -16,13 +16,13 @@ BASE_ITEMS=(
     "List Shortcuts"     "?" "list-keys"
     ""                   ""  ""
     "── Remote ──"       ""  ""
-    "Remote Sessions"    "k" "display-popup -w 25 -h 50% -T ' Remote Sessions ' -E 'bash ~/dotfiles/scripts/remote-sessions.sh'"
+    "Remote Sessions"    "k" "display-popup -w 25 -h 15 -T ' Remote Sessions ' -E 'bash ~/dotfiles/scripts/remote-sessions.sh'"
 )
 
 REMOTE_ITEMS=(
     ""                   ""  ""
     "── Remote ──"       ""  ""
-    "Remote Sessions"    "w" "display-popup -w 25 -h 50% -T ' Remote Sessions ' -E 'bash ~/dotfiles/scripts/remote-sessions.sh'"
+    "Remote Sessions"    "w" "display-popup -w 25 -h 15 -T ' Remote Sessions ' -E 'bash ~/dotfiles/scripts/remote-sessions.sh'"
     "Exit Remote Tmux"   "d" "send-keys C-q C-q d"
 )
 
