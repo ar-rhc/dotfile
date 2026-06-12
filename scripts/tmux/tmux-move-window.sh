@@ -4,8 +4,27 @@
 src_window="$1"
 current=$(tmux display-message -p '#S')
 
-target=$({ echo "+ New Session"; tmux list-sessions -F '#{session_name}' | grep -v "^${current}$"; } | \
-    fzf --prompt='move to> ' --reverse --header="Move window to session")
+sessions=$(tmux list-sessions -F '#{session_name}' | grep -v "^${current}$")
+options=$(printf '+ New Session\n'; echo "$sessions" | awk '{printf "%-25s (%d)\n", $0, NR}')
+
+count=$(echo "$sessions" | grep -c .)
+expect_keys=$(seq 1 $count | tr '\n' ',' | sed 's/,$//')
+
+result=$(echo "$options" | \
+    fzf --prompt='move to> ' --reverse \
+        --expect="$expect_keys" \
+        --header="Move window to session")
+
+[ -z "$result" ] && exit 0
+
+key=$(echo "$result" | head -n 1)
+line=$(echo "$result" | sed -n '2p')
+
+if echo "$key" | grep -qE '^[0-9]+$'; then
+    target=$(echo "$sessions" | sed -n "${key}p")
+else
+    target=$(echo "$line" | sed 's/ *([0-9]*)$//' | xargs)
+fi
 
 [ -z "$target" ] && exit 0
 
