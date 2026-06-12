@@ -12,7 +12,7 @@ disabled = false
 [hostname]
 ssh_only = false
 style = "bold green"
-format = "[@macmini]($style) "
+format = "[@$hostname]($style) "
 disabled = false
 
 [directory]
