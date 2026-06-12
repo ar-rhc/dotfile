@@ -1,3 +1,10 @@
+Host kawakawa
+    HostName        100.102.141.119
+    User            alex
+    IdentityFile    ~/.ssh/id_ed25519
+    AddKeysToAgent  yes
+    UseKeychain     yes
+
 Host github.com
   AddKeysToAgent yes
   UseKeychain yes
