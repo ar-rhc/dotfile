@@ -11,11 +11,18 @@ Host github.com
   IdentityFile ~/.ssh/id_rsa
 
 Host nuc
-    HostName 192.168.68.117
-    User alex
-    IdentityFile ~/.ssh/nuc
-    AddKeysToAgent yes
-    UseKeychain yes
+    HostName        100.74.152.125
+    User            alex
+    IdentityFile    ~/.ssh/id_ed25519
+    AddKeysToAgent  yes
+    UseKeychain     yes
+
+Host nuc-local
+    HostName        192.168.68.117
+    User            alex
+    IdentityFile    ~/.ssh/id_ed25519
+    AddKeysToAgent  yes
+    UseKeychain     yes
 
 Host nas
     HostName        192.168.68.108
