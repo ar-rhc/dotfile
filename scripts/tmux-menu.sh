@@ -19,7 +19,7 @@ BASE_ITEMS=(
 REMOTE_ITEMS=(
     ""                 ""  ""
     "── Kawakawa ──"   ""  ""
-    "Switch Session"   "k" "display-popup -w 50% -h 40% -E 'bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
+    "Switch Session"   "k" "display-popup -w 50% -h 40% -E 'PARENT_PANE=#{pane_id} bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
     "Close Remote"     "d" "kill-window"
 )
 
