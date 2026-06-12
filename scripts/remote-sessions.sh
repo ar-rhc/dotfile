@@ -20,8 +20,8 @@ else
     machines="$ALL_MACHINES"
 fi
 
-# Number the list
-numbered=$(echo "$machines" | awk '{print NR"  "$0}')
+# Number the list (same style as session switcher)
+numbered=$(echo "$machines" | awk '{printf "%-25s (%d)\n", $0, NR}')
 count=$(echo "$machines" | wc -l | tr -d ' ')
 expect_keys=$(seq 1 $count | tr '\n' ',' | sed 's/,$//')
 
@@ -38,7 +38,7 @@ line=$(echo "$result" | sed -n '2p')
 if echo "$key" | grep -qE '^[0-9]+$'; then
     machine=$(echo "$machines" | sed -n "${key}p")
 else
-    machine=$(echo "$line" | awk '{print $2}')
+    machine=$(echo "$line" | sed 's/ *([0-9]*)$//' | xargs)
 fi
 [ -z "$machine" ] && exit 0
 
