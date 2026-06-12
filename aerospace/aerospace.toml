@@ -70,19 +70,17 @@ key-mapping.preset = 'qwerty'
 # any setup (e.g. MacBook with only the built-in display, where none of the
 # named external monitors are connected). Adapts across 1/2/3-monitor setups.
 [workspace-to-monitor-force-assignment]
-# Group 1 — preferred on HP, falls back to LG, then to main
-1 = ['HP E24u G4', 'LG ULTRAFINE', 'main']
-Q = ['HP E24u G4', 'LG ULTRAFINE', 'main']
-A = ['HP E24u G4', 'LG ULTRAFINE', 'main']
-Z = ['HP E24u G4', 'LG ULTRAFINE', 'main']
-
-# Group 2 — LG, falls back to main
+# LG ULTRAFINE (Workspaces 1, 2, Q, W, A, S, Z, X)
+1 = ['LG ULTRAFINE', 'main']
+Q = ['LG ULTRAFINE', 'main']
+A = ['LG ULTRAFINE', 'main']
+Z = ['LG ULTRAFINE', 'main']
 2 = ['LG ULTRAFINE', 'main']
 W = ['LG ULTRAFINE', 'main']
 S = ['LG ULTRAFINE', 'main']
 X = ['LG ULTRAFINE', 'main']
 
-# Group 3 — Samsung, falls back to main
+# Samsung S24C31x (Workspaces 3, E, D, C, M)
 3 = ['S24C31x', 'main']
 E = ['S24C31x', 'main']
 D = ['S24C31x', 'main']

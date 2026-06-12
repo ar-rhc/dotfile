@@ -3,45 +3,44 @@
 
 local M = {}
 
+-- Get actual monitors from AeroSpace
 local handle = io.popen("aerospace list-monitors")
-local monitors = {}
 local monitor_names = {}
+local monitor_ids = {}
 for line in handle:lines() do
   local id, name = line:match("(%d+)%s+|%s+(.+)")
   if id then
     local m = tonumber(id)
-    table.insert(monitors, m)
+    table.insert(monitor_ids, m)
     monitor_names[m] = name
   end
 end
 handle:close()
 
-M.count = #monitors
-
--- AeroSpace monitor → SketchyBar display mapping
--- SketchyBar numbers displays main-first (macOS main = SB display 1). LG is the
--- main monitor, so whichever AeroSpace ID corresponds to LG gets SB1; the
--- remaining monitors get SB2+ in AeroSpace's left-to-right order. This adapts
--- automatically across 1/2/3-monitor setups and physical reordering.
+M.count = #monitor_ids
 M.map = {}
-local main_aerospace_id = nil
+
+-- Strategy:
+-- 1. Identify which AeroSpace ID is the "LG" monitor.
+-- 2. Map LG to SB Display 1.
+-- 3. Map everything else sequentially.
+local lg_aerospace_id = nil
 for m, name in pairs(monitor_names) do
-  if name:match("LG") then main_aerospace_id = m; break end
+  if name:match("LG") then lg_aerospace_id = m; break end
 end
 
-if main_aerospace_id then
-  M.map[main_aerospace_id] = 1
+if lg_aerospace_id then
+  M.map[lg_aerospace_id] = 1
   local next_sb = 2
-  for _, m in ipairs(monitors) do
-    if m ~= main_aerospace_id then
+  for _, m in ipairs(monitor_ids) do
+    if m ~= lg_aerospace_id then
       M.map[m] = next_sb
       next_sb = next_sb + 1
     end
   end
 else
-  for _, m in ipairs(monitors) do M.map[m] = m end
+  -- Fallback: 1-to-1 mapping
+  for _, m in ipairs(monitor_ids) do M.map[m] = m end
 end
-
-M.lg = main_aerospace_id and M.map[main_aerospace_id] or 1
 
 return M
