@@ -1,1 +1,2 @@
 ssh/config merge=ours
+tmux.conf.local merge=ours
