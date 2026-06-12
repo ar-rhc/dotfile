@@ -28,7 +28,7 @@ error_symbol = '[\$](bold red)'
 
 [env_var.SSH_CLIENT]
 variable = "SSH_CLIENT"
-format = "[[\\[SSH\\]](bold yellow) "
+format = "[\\[SSH\\] ](bold yellow)"
 disabled = false
 
 # --- Disabled Modules ---
