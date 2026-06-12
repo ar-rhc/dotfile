@@ -2,7 +2,7 @@
 # Multi-machine remote session selector.
 # Step 1: pick machine. Step 2: pick SSH or a tmux session.
 
-MACHINES="mini
+ALL_MACHINES="mini
 kawakawa
 nuc"
 
@@ -13,9 +13,33 @@ get_tmux_path() {
     esac
 }
 
+# Filter out local machine if REMOTE_SELF is set
+if [ -n "$REMOTE_SELF" ]; then
+    machines=$(echo "$ALL_MACHINES" | grep -v "^${REMOTE_SELF}$")
+else
+    machines="$ALL_MACHINES"
+fi
+
+# Number the list
+numbered=$(echo "$machines" | awk '{print NR"  "$0}')
+count=$(echo "$machines" | wc -l | tr -d ' ')
+expect_keys=$(seq 1 $count | tr '\n' ',' | sed 's/,$//')
+
 # Step 1: pick machine
-machine=$(echo "$MACHINES" | \
-    fzf --prompt='remote> ' --reverse --header='Select machine')
+result=$(echo "$numbered" | \
+    fzf --prompt='remote> ' --reverse \
+        --expect="$expect_keys" \
+        --header="Select machine")
+[ -z "$result" ] && exit 0
+
+key=$(echo "$result" | head -n 1)
+line=$(echo "$result" | sed -n '2p')
+
+if echo "$key" | grep -qE '^[0-9]+$'; then
+    machine=$(echo "$machines" | sed -n "${key}p")
+else
+    machine=$(echo "$line" | awk '{print $2}')
+fi
 [ -z "$machine" ] && exit 0
 
 tmux_remote=$(get_tmux_path "$machine")
