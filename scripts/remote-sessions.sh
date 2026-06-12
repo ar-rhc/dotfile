@@ -2,19 +2,23 @@
 # Multi-machine remote session selector.
 # Step 1: pick machine. Step 2: pick SSH or a tmux session.
 
-declare -A TMUX_PATH=(
-    [mini]="/opt/homebrew/bin/tmux"
-    [kawakawa]="/opt/homebrew/bin/tmux"
-    [nuc]="/usr/bin/tmux"
-)
-MACHINES=("mini" "kawakawa" "nuc")
+MACHINES="mini
+kawakawa
+nuc"
+
+get_tmux_path() {
+    case "$1" in
+        mini|kawakawa) echo "/opt/homebrew/bin/tmux" ;;
+        nuc)           echo "/usr/bin/tmux" ;;
+    esac
+}
 
 # Step 1: pick machine
-machine=$(printf '%s\n' "${MACHINES[@]}" | \
+machine=$(echo "$MACHINES" | \
     fzf --prompt='remote> ' --reverse --header='Select machine')
 [ -z "$machine" ] && exit 0
 
-tmux_remote="${TMUX_PATH[$machine]}"
+tmux_remote=$(get_tmux_path "$machine")
 
 # Step 2: fetch sessions + prepend SSH option
 sessions=$(ssh "$machine" "$tmux_remote list-sessions -F '#{session_last_attached} #S' 2>/dev/null" | \
