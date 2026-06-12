@@ -16,14 +16,14 @@ BASE_ITEMS=(
     "List Shortcuts"     "?" "list-keys"
     ""                   ""  ""
     "── Remote ──"       ""  ""
-    "Kawakawa Sessions"  "k" "display-popup -w 50% -h 40% -E 'PARENT_PANE=#{pane_id} bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
+    "Remote Sessions"    "k" "display-popup -w 55% -h 50% -E 'bash ~/dotfiles/scripts/remote-sessions.sh'"
 )
 
 REMOTE_ITEMS=(
-    ""                        ""  ""
-    "── Kawakawa ──"          ""  ""
-    "Switch Session"          "w" "display-popup -w 50% -h 40% -E 'PARENT_PANE=#{pane_id} bash ~/dotfiles/scripts/kawakawa-sessions.sh'"
-    "Exit Remote Tmux"        "d" "send-keys C-q d"
+    ""                   ""  ""
+    "── Remote ──"       ""  ""
+    "Remote Sessions"    "w" "display-popup -w 55% -h 50% -E 'bash ~/dotfiles/scripts/remote-sessions.sh'"
+    "Exit Remote Tmux"   "d" "send-keys C-q C-q d"
 )
 
 ITEMS=("${BASE_ITEMS[@]}")
