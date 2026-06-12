@@ -65,24 +65,29 @@ key-mapping.preset = 'qwerty'
 #                 In this example, 24 is a default value when there is no match.
 #                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
+# Name-based assignment: each list is a fallback chain — AeroSpace picks the
+# first matching connected monitor. Final 'main' entry guarantees a match on
+# any setup (e.g. MacBook with only the built-in display, where none of the
+# named external monitors are connected). Adapts across 1/2/3-monitor setups.
 [workspace-to-monitor-force-assignment]
-# Monitor 1: HP E24u G4
-1 = 1
-Q = 1
-A = 1
-Z = 1
-# Monitor 2: LG ULTRAFINE
-2 = 2
-W = 2
-S = 2
-X = 2
+# Group 1 — preferred on HP, falls back to LG, then to main
+1 = ['HP E24u G4', 'LG ULTRAFINE', 'main']
+Q = ['HP E24u G4', 'LG ULTRAFINE', 'main']
+A = ['HP E24u G4', 'LG ULTRAFINE', 'main']
+Z = ['HP E24u G4', 'LG ULTRAFINE', 'main']
 
-# Monitor 3: S24C31x
-3 = 3
-E = 3
-D = 3
-C = 3
-M = 3
+# Group 2 — LG, falls back to main
+2 = ['LG ULTRAFINE', 'main']
+W = ['LG ULTRAFINE', 'main']
+S = ['LG ULTRAFINE', 'main']
+X = ['LG ULTRAFINE', 'main']
+
+# Group 3 — Samsung, falls back to main
+3 = ['S24C31x', 'main']
+E = ['S24C31x', 'main']
+D = ['S24C31x', 'main']
+C = ['S24C31x', 'main']
+M = ['S24C31x', 'main']
 
 
 [gaps]
@@ -128,9 +133,11 @@ PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
 
 ########## Layout Commands ##########
 alt-ctrl-shift-slash = 'layout tiles horizontal vertical'
+alt-ctrl-shift-period = 'layout accordion horizontal vertical'
 alt-ctrl-shift-comma = 'layout accordion horizontal vertical'
 alt-ctrl-shift-f = ['layout floating tiling']
-## alt-ctrl-shift-v = ## Using BTT to center window
+alt-ctrl-shift-r = 'exec-and-forget /opt/homebrew/bin/sketchybar --update && /opt/homebrew/bin/sketchybar --bar color=0xa000804a && sleep 0.3 && /opt/homebrew/bin/sketchybar --bar color=0xa0000000'
+alt-ctrl-shift-v = 'exec-and-forget /bin/bash $HOME/dotfiles/aerospace/scripts/center-window.sh' # Center active window
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
@@ -214,7 +221,7 @@ alt-shift-m = ['move-node-to-workspace M', 'workspace M']
 
 # Focus/switch to workspace: alt-ctrl-shift-<space name>
 alt-ctrl-shift-1 = 'workspace 1'
-alt-ctrl-shift-q = 'workspace Q'
+alt-ctrl-shift-q = ['workspace Q', 'exec-and-forget open -a Messages', 'exec-and-forget open -a WeChat']
 alt-ctrl-shift-a = 'workspace A'
 alt-ctrl-shift-z = 'workspace Z'
 alt-ctrl-shift-2 = 'workspace 2'
@@ -307,8 +314,18 @@ t = [
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
     'mode main'
 ]
+c = [
+    'exec-and-forget open -a Calendar',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
+d = [
+    'exec-and-forget open /Volumes/Nvme/Downloads',
+    'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
+    'mode main'
+]
 f = [
-    'exec-and-forget open -a Finder',
+    'exec-and-forget osascript -e "tell application \"Finder\" to activate"',
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_app_mode_exit',
     'mode main'
 ]
@@ -338,18 +355,19 @@ esc = [
     'mode main',
     'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit',
     'reload-config',
-    'exec-and-forget /opt/homebrew/bin/sketchybar --reload'
+    'exec-and-forget /opt/homebrew/bin/sketchybar --update'
 ]
 r = ['flatten-workspace-tree'] # reset layout
+q = ['exec-and-forget /opt/homebrew/bin/sketchybar --reload'] # Full SketchyBar reload
 #s = ['layout sticky tiling'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
-f = ['layout floating tiling'] # Toggle between floating and tiling layout
+f = ['layout floating tiling', 'mode main', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit'] # Toggle floating/tiling + exit
 d = ['exec-and-forget /bin/bash $HOME/dotfiles/aerospace/scripts/toggle-floating-default.sh'] # Toggle default float/tile for focused app
-alt-ctrl-shift-f = ['fullscreen'] # Toggle fullscreen
+alt-ctrl-shift-f = ['fullscreen', 'mode main', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit'] # Toggle fullscreen + exit
 c = ['exec-and-forget /bin/bash -c "$HOME/.config/sketchybar/plugins/scripts/close_empty_windows.sh"'] # Close empty windows
 t = ['layout tiles accordion'] # Toggle tiles/accordion
 e = ['balance-sizes'] # Equalize window sizes
 s = ['layout h_tiles v_tiles'] # Toggle split direction
-w = ['close'] # Close focused window
+w = ['close', 'mode main', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_service_mode_exit'] # Close window + exit
 g = ['exec-and-forget /bin/bash $HOME/dotfiles/aerospace/scripts/toggle-gaps.sh'] # Toggle gaps
 equal = ['resize smart +50'] # Resize bigger
 minus = ['resize smart -50'] # Resize smaller
@@ -376,7 +394,6 @@ m = []
 n = []
 o = []
 p = []
-q = []
 u = []
 v = []
 x = []
@@ -424,11 +441,11 @@ semicolon = []
 
 [[on-window-detected]]
 if.app-id = 'com.kakao.KakaoTalkMac'
-run = ['move-node-to-workspace 8', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace 8', 'workspace 8', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tdesktop.Telegram'
-run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace A', 'workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tdesktop.Telegram'
@@ -437,12 +454,12 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.hnc.Discord'
-run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace A', 'workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
-# [[on-window-detected]]
-# if.app-id = "md.obsidian"
-# run = ['move-node-to-workspace 9']
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = ['move-node-to-workspace 1', 'workspace 1', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.finder'
@@ -462,16 +479,16 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Music'
-run = ['move-node-to-workspace M', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace M', 'workspace M', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
 if.window-title-regex-substring = 'Weixin'
-run = ['move-node-to-workspace Q', 'move down', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace Q', 'workspace Q', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.MobileSMS'
-run = ['move-node-to-workspace Q', 'move down', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace Q', 'workspace Q', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
@@ -485,25 +502,25 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'br.paker.Calendr'
-run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace E', 'workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.mail'
-run = ['move-node-to-workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace E', 'workspace E', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.adobe.LightroomClassicCC7'
-run = ['move-node-to-workspace W', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace W', 'workspace W', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
 [[on-window-detected]]
 if.app-id = 'com.apple.findmy'
 if.window-title-regex-substring = 'Find My'
-run = ['move-node-to-workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace A', 'workspace A', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.iCal'
-run = ['move-node-to-workspace C', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace C', 'workspace C', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.window-title-regex-substring = 'Bitwarden'
@@ -511,12 +528,12 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.brave.Browser'
-run = ['move-node-to-workspace S', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace S', 'workspace S', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.edgemac'
-run = ['move-node-to-workspace 2', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
+run = ['move-node-to-workspace 2', 'workspace 2', 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger window_moved']
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.edgemac'
@@ -542,10 +559,6 @@ if.app-id = 'org.pqrs.Karabiner-Elements.Settings'
 run = ['layout floating']
 
 [[on-window-detected]]
-if.app-id = 'md.obsidian'
-run = ['layout floating']
-
-[[on-window-detected]]
 if.app-id = 'com.apple.ActivityMonitor'
 run = ['layout floating']
 
@@ -559,4 +572,12 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.AppStore'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.Excel'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.valvesoftware.steam.helper'
 run = ['layout floating']

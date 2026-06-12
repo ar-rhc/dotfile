@@ -207,6 +207,8 @@ backup_and_link() {
 }
 
 # Create symlinks
+mkdir -p ~/.ssh
+backup_and_link ~/.ssh/config "$REPO_DIR/ssh/config" "ssh/config"
 backup_and_link ~/.aerospace.toml "$REPO_DIR/aerospace/aerospace.toml" "aerospace.toml"
 mkdir -p ~/.config/aerospace
 backup_and_link ~/.config/aerospace/scripts "$REPO_DIR/aerospace/scripts" "aerospace/scripts"

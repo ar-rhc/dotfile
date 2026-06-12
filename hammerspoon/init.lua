@@ -22,8 +22,9 @@ controller.startListener('127.0.0.1', 12345) -- Start the listener
 -- local hybrid_controller = require("modules.hybrid_controller")
 
 -- Load and start the device watchers (Huion Tablet and DS4 Controller)
-local deviceWatchers = require("modules.device_watchers")
-deviceWatchers:start()
+-- Wrapped in pcall so machines without this module (e.g. MacBook) skip it silently
+local ok, deviceWatchers = pcall(require, "modules.device_watchers")
+if ok then deviceWatchers:start() end
 
 -- Load and start the advanced window management module
 -- local windowManager = require("modules.window_management")
