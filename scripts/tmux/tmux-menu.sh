@@ -12,6 +12,7 @@ BASE_ITEMS=(
     ""                   ""  ""
     "Rename Window"      "r" "command-prompt -I '#W' 'rename-window %%'"
     "Rename Pane"        "R" "command-prompt -p 'New pane title:' -I '#{pane_title}' 'select-pane -T %%'"
+    "File Manager"       "e" "display-popup -w 80% -h 85% -E 'yazi'"
     "Session Switcher"   "s" "display-popup -w 30% -h 35% -E 'bash ~/dotfiles/scripts/tmux/tmux-session-fzf.sh'"
     "Move Window"        "." "display-popup -w 30% -h 35% -E 'bash ~/dotfiles/scripts/tmux/tmux-move-window.sh #{window_id}'"
     "List Shortcuts"     "?" "list-keys"
