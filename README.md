@@ -59,6 +59,7 @@ Each machine has its own branch. Shared config lives on `main`; machine-specific
 main          → shared files (sketchybar, aerospace, hammerspoon, etc.)
 mini          → main + mac mini specific files (ssh/config, displays, etc.)
 macbook       → main + macbook specific files (ssh/config, etc.)
+pro           → main + MacBook Pro specific files (ssh/config, identity, etc.)
 ```
 
 **To pull shared updates into a machine branch:**
@@ -78,7 +79,6 @@ This ensures `git merge main` never overwrites machine-specific files even if a 
 ## License
 
 MIT
-
 
 
 
