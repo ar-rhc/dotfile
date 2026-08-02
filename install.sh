@@ -82,6 +82,22 @@ echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━�
 install_package "jq" "jq"
 install_package "curl" "curl"
 install_package "python3" "Python 3"
+install_package "tmux" "Tmux"
+install_package "yazi" "Yazi"
+install_package "starship" "Starship"
+install_package "fzf" "fzf"
+install_package "fd" "fd"
+install_package "zoxide" "zoxide"
+install_package "bat" "bat"
+install_package "lazygit" "Lazygit"
+install_package "neovim" "Neovim"
+install_package "duckdb" "DuckDB"
+install_package "rich-cli" "Rich CLI"
+install_package "ouch" "Ouch"
+install_package "pandoc" "Pandoc"
+install_package "media-info" "MediaInfo"
+install_package "ffmpegthumbnailer" "FFmpeg Thumbnailer"
+install_package "exiftool" "ExifTool"
 echo ""
 
 # Step 3: Install Fonts
@@ -90,6 +106,7 @@ echo -e "${YELLOW}Step 3: Installing Fonts${NC}"
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 install_cask "font-sketchybar-app-font" "SketchyBar App Font"
 install_cask "sf-symbols" "SF Symbols"
+install_cask "ghostty" "Ghostty"
 echo -e "${GREEN}✅ Fonts installed${NC}"
 echo -e "${YELLOW}ℹ️  Note: SF Pro is a system font and should already be available${NC}"
 echo ""
@@ -208,13 +225,28 @@ backup_and_link() {
 
 # Create symlinks
 mkdir -p ~/.ssh
+mkdir -p ~/.config/tmux ~/.config/ghostty ~/.config/yazi
+backup_and_link ~/.tmux.conf "$REPO_DIR/tmux.conf" "tmux.conf"
+backup_and_link ~/.config/tmux/tmux.conf "$REPO_DIR/tmux.conf" "tmux.conf (config dir)"
 backup_and_link ~/.ssh/config "$REPO_DIR/ssh/config" "ssh/config"
 backup_and_link ~/.tmux.conf.local "$REPO_DIR/tmux.conf.local" "tmux.conf.local"
+backup_and_link ~/.config/starship.toml "$REPO_DIR/starship.toml" "starship.toml"
+backup_and_link ~/.config/ghostty/config "$REPO_DIR/ghostty.conf" "ghostty config"
+backup_and_link ~/.config/yazi/yazi.toml "$REPO_DIR/yazi/yazi.toml" "Yazi config"
+backup_and_link ~/.config/yazi/keymap.toml "$REPO_DIR/yazi/keymap.toml" "Yazi keymap"
+backup_and_link ~/.config/yazi/package.toml "$REPO_DIR/yazi/package.toml" "Yazi package manifest"
 backup_and_link ~/.aerospace.toml "$REPO_DIR/aerospace/aerospace.toml" "aerospace.toml"
 mkdir -p ~/.config/aerospace
 backup_and_link ~/.config/aerospace/scripts "$REPO_DIR/aerospace/scripts" "aerospace/scripts"
 backup_and_link ~/.config/sketchybar "$REPO_DIR/sketchybar" "sketchybar"
 backup_and_link ~/.hammerspoon "$REPO_DIR/hammerspoon" "hammerspoon"
+
+if command_exists ya; then
+    echo -e "${YELLOW}📦 Installing pinned Yazi plugins...${NC}"
+    ya pkg install
+else
+    echo -e "${YELLOW}⚠️  Yazi package manager not found; skipping plugins${NC}"
+fi
 echo ""
 
 # Step 10: Build SketchyBar helper

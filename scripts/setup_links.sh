@@ -50,4 +50,12 @@ backup_and_link "$REPO_DIR/starship.toml" "$HOME/.config/starship.toml" "starshi
 # Ghostty
 backup_and_link "$REPO_DIR/ghostty.conf" "$HOME/.config/ghostty/config" "ghostty config"
 
+# Machine-specific Tmux settings
+backup_and_link "$REPO_DIR/tmux.conf.local" "$HOME/.tmux.conf.local" "tmux.conf.local"
+
+# Yazi
+backup_and_link "$REPO_DIR/yazi/yazi.toml" "$HOME/.config/yazi/yazi.toml" "Yazi config"
+backup_and_link "$REPO_DIR/yazi/keymap.toml" "$HOME/.config/yazi/keymap.toml" "Yazi keymap"
+backup_and_link "$REPO_DIR/yazi/package.toml" "$HOME/.config/yazi/package.toml" "Yazi package manifest"
+
 echo -e "${GREEN}✨ Symlink setup complete!${NC}"
