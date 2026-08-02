@@ -1,0 +1,11 @@
+[mgr]
+prepend_keymap = [
+    { on = "<D-z>",  run = "shell -- bash ~/dotfiles/scripts/yazi/restore-trash.sh", desc = "Open Trash to restore an item" },
+    { on = "P",          run = "shell -- qlmanage -p %h &>/dev/null", desc = "Quick Look preview" },
+    { on = "<S-Enter>",  run = "open --with edit-nvim",               desc = "Open in nvim" },
+    { on = ["c", "p"], run = "plugin pandoc",                      desc = "Convert file with pandoc" },
+    { on = "z",          run = "plugin zoxide",                                                                              desc = "Jump to a directory via zoxide" },
+    { on = "Z",          run = "plugin fzf",                                                                                 desc = "Jump to a file/directory via fzf" },
+    { on = ["g", "a"],   run = "cd ~/Library/CloudStorage/GoogleDrive-al3xand3rruan@gmail.com",                              desc = "Google Drive (personal)" },
+    { on = ["g", "m"],   run = "cd ~/Library/CloudStorage/GoogleDrive-alex@motuihe.org.nz",                                 desc = "Google Drive (Motuihe)" },
+]
