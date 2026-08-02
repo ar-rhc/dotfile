@@ -5,7 +5,7 @@ set-environment -g REMOTE_SELF kawakawa
 bind m run-shell "bash ~/dotfiles/scripts/tmux/tmux-menu.sh"
 
 # File manager
-bind e display-popup -w 80% -h 85% -E "yazi"
+bind e new-window -n "yazi" "yazi"
 
 # Remote session picker
 bind K display-popup -w 40 -h 15 -T " Remote Sessions " -E "bash ~/dotfiles/scripts/tmux/remote-sessions.sh"
